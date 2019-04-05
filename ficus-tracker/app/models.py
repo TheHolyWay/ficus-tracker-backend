@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 
 
-class User(db.Model):
+class FicusTrackerUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     login = db.Column(db.String(64), index=True, unique=True)
     password_hash = db.Column(db.String(128))

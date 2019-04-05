@@ -5,7 +5,7 @@ from flask import jsonify, request
 from app import db
 from app.api_v1 import bp
 from app.api_v1.errors import bad_request
-from app.models import User
+from app.models import FicusTrackerUser
 
 
 @bp.route('/users', methods=['POST'])
@@ -24,11 +24,11 @@ def create_user_or_return_token():
     login = auth_str[0]
     password = auth_str[1]
 
-    if User.query.filter_by(login=login).first():
+    if FicusTrackerUser.query.filter_by(login=login).first():
         resp_data['message'] = "Уже есть такой юзер"
 
     # Create user
-    user = User()
+    user = FicusTrackerUser()
     user.login = login
     user.password_hash = user.set_password(password)
     user.token = user.generate_token()
