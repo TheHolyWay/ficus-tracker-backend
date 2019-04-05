@@ -26,15 +26,15 @@ def create_user_or_return_token():
 
     if FicusTrackerUser.query.filter_by(login=login).first():
         resp_data['message'] = "Уже есть такой юзер"
-
-    # Create user
-    user = FicusTrackerUser()
-    user.login = login
-    user.password_hash = user.set_password(password)
-    user.token = user.generate_token()
-    resp_data['token'] = user.token
-    db.session.add(user)
-    db.session.commit()
+    else:
+        # Create user
+        user = FicusTrackerUser()
+        user.login = login
+        user.password_hash = user.set_password(password)
+        user.token = user.generate_token()
+        resp_data['token'] = user.token
+        db.session.add(user)
+        db.session.commit()
 
     resp = jsonify(resp_data)
 
