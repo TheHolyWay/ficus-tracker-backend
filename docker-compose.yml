@@ -1,35 +1,37 @@
 version: "2"
-#networks:
-#  ficus-tracker-backend-proxy:
-#    driver: "bridge"
+networks:
+  ficus-tracker-backend-proxy:
+    driver: "bridge"
 
 services:
   postgres:
     container_name: "postgres"
-    build:
-      context: postgres
-    network_mode: "host"
+    build: "postgres"
+    networks:
+      - "ficus-tracker-backend-proxy"
     restart: "always"
     ports:
       - 5432:5432
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
   nginx:
-    build:
-      context: nginx
-    network_mode: "host"
+    build: "nginx"
     container_name: "nginx"
     ports:
       - 80:80
+    networks:
+      - "ficus-tracker-backend-proxy"
   ficus-tracker:
-    build:
-      context: "ficus-tracker"
-    network_mode: "host"
+    build: "ficus-tracker"
     container_name: "ficus-tracker"
     ports:
       - 5000:5000
     environment:
       DATABASE_URL: "${DATABASE_URL}"
+    links:
+      - "postgres:postgres"
+    networks:
+      - "ficus-tracker-backend-proxy"
 
 
 
