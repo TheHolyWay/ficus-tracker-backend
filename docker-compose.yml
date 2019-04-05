@@ -8,7 +8,7 @@ services:
     container_name: "postgres"
     build:
       context: postgres
-      network: host
+    network_mode: "host"
     restart: "always"
     ports:
       - 5432:5432
@@ -17,14 +17,14 @@ services:
   nginx:
     build:
       context: nginx
-      network: host
+    network_mode: "host"
     container_name: "nginx"
     ports:
       - 80:80
   ficus-tracker:
     build:
-      context: ficus-tracker
-      network: host
+      context: "ficus-tracker"
+    network_mode: "host"
     container_name: "ficus-tracker"
     ports:
       - 5000:5000
