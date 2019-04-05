@@ -1,8 +1,8 @@
-from app import app
+from app import main_bp
 
 
-@app.route('/')
-@app.route('/index')
+@main_bp.route('/')
+@main_bp.route('/index')
 def index():
     return "Welcome on the ficus-tracker-backend"
 
