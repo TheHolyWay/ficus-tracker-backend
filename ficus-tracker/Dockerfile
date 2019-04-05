@@ -9,6 +9,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-ENV FLASK_APP=/opt/ficus-tracker/ficus_tracker.py
-
-CMD [ "flask", "run" ]
+CMD [ "python", "/opt/ficus-tracker/ficus_tracker.py" ]
