@@ -1,8 +1,4 @@
-from app import create_app, db
-from app import models
-
-
-app = create_app()
+from app import app, db
 
 
 @app.shell_context_processor

@@ -3,10 +3,7 @@ from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
-
 main_bp = Blueprint('main', __name__)
-db = SQLAlchemy()
-migrate = Migrate(db)
 
 
 @main_bp.route('/')
@@ -14,13 +11,13 @@ def index():
     return "Welcome on the ficus-tracker-backend"
 
 
-def create_app(config_class=Config):
-    app = Flask(__name__)
-    app.config.from_object(config_class)
-    db.init_app(app)
-    migrate.init_app(app)
+app = Flask(__name__)
+app.config.from_object(Config)
+app.app_context().push()
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
-    app.register_blueprint(main_bp, url_prefix='/')
+app.register_blueprint(main_bp, url_prefix='/')
 
-    return app
 
+from app import models
