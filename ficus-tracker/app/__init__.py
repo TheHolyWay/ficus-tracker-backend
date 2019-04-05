@@ -2,7 +2,7 @@ from flask import Flask, Blueprint
 from config import Config
 
 
-main_bp = Blueprint('index', __name__)
+main_bp = Blueprint('', __name__)
 
 
 def create_app(config_class=Config):
