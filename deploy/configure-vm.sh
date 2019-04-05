@@ -2,7 +2,7 @@
 
 # Install helpful tools
 echo "==> Install helpful tools"
-yum install -y mc net-tools bind-utils epel-release
+yum install -y mc net-tools bind-utils epel-release nmap
 
 # Configure mcedit
 echo "==> Configure mcedit"
