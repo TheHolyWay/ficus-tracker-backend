@@ -16,4 +16,4 @@ RUN flask db init
 RUN flask db migrate
 RUN flask db upgrade
 
-CMD [ "python", "/opt/ficus-tracker/ficus_tracker.py" ]
+ENTRYPOINT "/opt/ficus-tracker/entrypoint.sh"
