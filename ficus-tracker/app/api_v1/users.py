@@ -1,3 +1,5 @@
+from flask import jsonify
+
 from app.api_v1 import bp
 
 
@@ -8,4 +10,7 @@ def create_user_or_return_token():
 
 @bp.route('/users/<int:id_>', methods=['GET'])
 def get_user(id_):
-    return {"id": id_}, 200
+    resp = jsonify({"id": id_})
+    resp.status_code = 200
+
+    return resp
