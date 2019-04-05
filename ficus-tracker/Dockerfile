@@ -11,8 +11,8 @@ COPY . .
 
 ENV FLASK_APP=/opt/ficus-tracker/ficus_tracker.py
 
-RUN flask db init &&
-  flask db migrate &&
-  flask db upgrade
+RUN flask db init /
+  && flask db migrate /
+  && flask db upgrade
 
 CMD [ "python", "/opt/ficus-tracker/ficus_tracker.py" ]
