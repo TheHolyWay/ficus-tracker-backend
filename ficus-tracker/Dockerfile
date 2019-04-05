@@ -10,10 +10,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 ENV FLASK_APP=/opt/ficus-tracker/ficus_tracker.py
-ENV DATABASE_URL=${DATABASE_URL}
-
-RUN flask db init
-RUN flask db migrate
-RUN flask db upgrade
 
 ENTRYPOINT "/opt/ficus-tracker/entrypoint.sh"
