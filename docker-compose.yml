@@ -14,4 +14,12 @@ services:
       - 5432:5432
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  nginx:
+    build: "nginx"
+    container_name: "nginx"
+    ports:
+      - 80:80
+    networks:
+      - "ficus-tracker-backend-proxy"
+
 
