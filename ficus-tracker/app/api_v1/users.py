@@ -6,6 +6,6 @@ def create_user_or_return_token():
     pass
 
 
-@bp.route('/users/<int:id>', methods=['GET'])
+@bp.route('/users/<int:id_>', methods=['GET'])
 def get_user(id_):
     return {"id": id_}, 200
