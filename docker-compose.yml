@@ -17,6 +17,8 @@ services:
   nginx:
     build: "nginx"
     container_name: "nginx"
+    depends_on:
+      - "ficus-tracker"
     ports:
       - 80:80
     networks:
