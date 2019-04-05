@@ -11,4 +11,6 @@ COPY . .
 
 ENV FLASK_APP=/opt/ficus-tracker/ficus_tracker.py
 
+RUN chmod +x /opt/ficus-tracker/entrypoint.sh
+
 ENTRYPOINT "/opt/ficus-tracker/entrypoint.sh"
