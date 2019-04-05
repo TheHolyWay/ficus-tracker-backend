@@ -1,0 +1,16 @@
+---
+version: 2
+networks:
+  ficus-tracker-backend-proxy:
+    driver: bridge
+
+services:
+  postgres:
+    container_name: postgres
+    build: postgres
+    networks:
+      - ficus-tracker-backend-proxy
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
