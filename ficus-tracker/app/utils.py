@@ -1,14 +1,12 @@
 import base64
 
 from flask import jsonify
-
-from app.api_v1.errors import server_error
 from app.models import User
 
 
 def create_response_from_data_with_code(data, code: int=200):
     """ Apply method jsonify to specified data and add status_code to result"""
-    resp = jsonify(data).decode()
+    resp = jsonify(data, encoding='utf-8')
     resp.status_code = code
 
     return resp
