@@ -55,8 +55,6 @@ def create_user_or_return_token():
         user.password_hash = user.generate_password_hash(password)
         user.token = user.generate_token()
         resp_data['token'] = user.token
-        resp_data['login'] = login
-        resp_data['pass'] = password
 
         # Commit changes to db
         db.session.add(user)
