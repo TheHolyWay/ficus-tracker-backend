@@ -23,7 +23,7 @@ class RecommendationBackGroundTask:
                     alarm.message = self.recom.text
                     alarm.severity = self.recom.severity
 
-                    db.context.add(alarm)
-                    db.context.commit()
+                    db.session.add(alarm)
+                    db.session.commit()
 
             time.sleep(self.interval)
