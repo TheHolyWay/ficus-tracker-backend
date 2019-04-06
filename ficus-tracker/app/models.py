@@ -7,8 +7,9 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     login = db.Column(db.String(64), index=True, unique=True)
     password_hash = db.Column(db.String(128))
-    token = db.Column(db.String(128))
+    token = db.Column(db.String(128), index=True, unique=True)
     flowers = db.relationship('Flower', backref='f_user', lazy='dynamic')
+    sensors = db.relationship('Sensor', backref='s_user', lazy='dynamic')
 
     @staticmethod
     def generate_password_hash(password):
@@ -54,6 +55,7 @@ class Flower(db.Model):
     name = db.Column(db.String(128), index=True, unique=True)
     flower_type = db.Column(db.Integer, db.ForeignKey('flower_type.id'))
     user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    sensor = db.Column(db.Integer, db.ForeignKey('sensor.id'))
 
     def get_type_name_by_id(self):
         f_type = FlowerType.query.filter_by(id=self.flower_type).first()
@@ -66,3 +68,24 @@ class Flower(db.Model):
         return {'id': self.id,
                 'name': self.name,
                 'type': self.get_type_name_by_id()}
+
+
+class Sensor(db.Model):
+    """ Represents registered sensor model """
+    id = db.Column(db.Integer, primary_key=True)
+    serial_number = db.Column(db.Integer, index=True, unique=True)
+    user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    flower = db.relationship('Flower', backref='f_sensor', lazy='dynamic')
+    token = db.Column(db.String(128))
+
+    def get_user_name_by_id(self):
+        user = User.query.filter_by(id=self.user).first()
+        if user:
+            return user.login
+        else:
+            return 'None'
+
+    def to_dict(self):
+        return {'serial_number': self.serial_number,
+                'user': self.get_user_name_by_id(),
+                'flower': self.flower.to_dict()}
