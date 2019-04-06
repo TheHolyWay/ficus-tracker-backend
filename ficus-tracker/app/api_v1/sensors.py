@@ -11,6 +11,11 @@ from app.utils import create_response_from_data_with_code, authorize, parse_auth
 SENSORS_API_PREFIX = '/sensors'
 
 
+@bp.route(f'/hub/ping')
+def ping():
+    return "OK"
+
+
 @bp.route(f'/hub/<string:token>/sensor', methods=["POST"])
 def accept_data(token):
     """ Register sensor if it's new sensor and send data to metrics storage """
