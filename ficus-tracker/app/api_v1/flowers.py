@@ -8,6 +8,7 @@ from app.models import FlowerType, User, Flower, Sensor, RecommendationItem
 from app.utils import create_response_from_data_with_code, parse_authorization_header, authorize, \
     recommendation_classes
 from app.api_v1.errors import server_error, bad_request, error_response, unauthorized
+from app.recommendations.engine import RecommendationBackGroundTask
 import logging
 
 FLOWERS_API_PREFIX = '/flowers'
@@ -84,6 +85,8 @@ def create_flower():
 
             db.session.add(recom)
             db.session.commit()
+
+            RecommendationBackGroundTask(recommendation_class.create_from_db(flower))
 
         return create_response_from_data_with_code(flower.to_dict(), 201)
     else:
