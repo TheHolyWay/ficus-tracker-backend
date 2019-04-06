@@ -4,7 +4,7 @@ from flask import request
 
 from app import db
 from app.api_v1 import bp
-from app.models import FlowerType, User, Flower, Sensor, RecommendationItem
+from app.models import FlowerType, User, Flower, Sensor, RecommendationItem, RecommendationAlarm
 from app.utils import create_response_from_data_with_code, parse_authorization_header, authorize, \
     recommendation_classes
 from app.api_v1.errors import server_error, bad_request, error_response, unauthorized
@@ -123,7 +123,7 @@ def get_user_flowers():
         return unauthorized(login)
 
 
-@bp.route(f'/flowers/<int:id>', methods=['GET'])
+@bp.route('/flowers/<int:id>', methods=['GET'])
 def get_flower_by_id(id):
     """ Return list of user flowers """
     logging.info("Called getting flowers endpoint ...")
@@ -148,5 +148,212 @@ def get_flower_by_id(id):
     if user and authorize(login, password, user):
         flower = user.flowers.filter_by(id=id).first()
         return create_response_from_data_with_code(flower.to_dict(), 200)
+    else:
+        return unauthorized(login)
+
+
+@bp.route('/flowers/recommendations', methods=['GET'])
+def get_user_flowers_active_recommendations():
+    logging.info("Called getting flowers recommendations endpoint ...")
+
+    headers = request.headers or {}
+    alarms = list()
+
+    # Check request
+    if 'Authorization' not in headers:
+        return bad_request("Missing 'Authorization' header in request")
+
+    # Parse auth
+    try:
+        login, password = parse_authorization_header(headers.get('Authorization'))
+    except Exception as e:
+        return server_error(f"Exception occurred during parsing user credentials: {str(e)}")
+
+    try:
+        user = User.query.filter_by(login=login).first()
+    except Exception as e:
+        return server_error(f"Exception occurred during loading user: {str(e)}")
+
+    if user and authorize(login, password, user):
+        u_flowers = user.flowers.filter_by(user=user.id).all()
+        for fl in u_flowers:
+            fl_tasks = RecommendationItem.query.filter_by(fl.id).all()
+            for t in fl_tasks:
+                t_alarms = RecommendationAlarm.query.filter_by(task=t.id, severity=2).all()
+                alarms.extend([x.message for x in t_alarms])
+
+        return create_response_from_data_with_code(alarms, 200)
+    else:
+        return unauthorized(login)
+
+
+@bp.route('/flowers/problems', methods=['GET'])
+def get_user_flowers_active_problems():
+    logging.info("Called getting flowers problems endpoint ...")
+
+    headers = request.headers or {}
+    alarms = list()
+
+    # Check request
+    if 'Authorization' not in headers:
+        return bad_request("Missing 'Authorization' header in request")
+
+    # Parse auth
+    try:
+        login, password = parse_authorization_header(headers.get('Authorization'))
+    except Exception as e:
+        return server_error(f"Exception occurred during parsing user credentials: {str(e)}")
+
+    try:
+        user = User.query.filter_by(login=login).first()
+    except Exception as e:
+        return server_error(f"Exception occurred during loading user: {str(e)}")
+
+    if user and authorize(login, password, user):
+        u_flowers = user.flowers.filter_by(user=user.id).all()
+        for fl in u_flowers:
+            fl_tasks = RecommendationItem.query.filter_by(fl.id).all()
+            for t in fl_tasks:
+                t_alarms = RecommendationAlarm.query.filter_by(task=t.id, severity=0).all()
+                alarms.extend([x.message for x in t_alarms])
+
+        return create_response_from_data_with_code(alarms, 200)
+    else:
+        return unauthorized(login)
+
+
+@bp.route('/flowers/warnings', methods=['GET'])
+def get_user_flowers_active_warnings():
+    logging.info("Called getting flowers warnings endpoint ...")
+
+    headers = request.headers or {}
+    alarms = list()
+
+    # Check request
+    if 'Authorization' not in headers:
+        return bad_request("Missing 'Authorization' header in request")
+
+    # Parse auth
+    try:
+        login, password = parse_authorization_header(headers.get('Authorization'))
+    except Exception as e:
+        return server_error(f"Exception occurred during parsing user credentials: {str(e)}")
+
+    try:
+        user = User.query.filter_by(login=login).first()
+    except Exception as e:
+        return server_error(f"Exception occurred during loading user: {str(e)}")
+
+    if user and authorize(login, password, user):
+        u_flowers = user.flowers.filter_by(user=user.id).all()
+        for fl in u_flowers:
+            fl_tasks = RecommendationItem.query.filter_by(fl.id).all()
+            for t in fl_tasks:
+                t_alarms = RecommendationAlarm.query.filter_by(task=t.id, severity=1).all()
+                alarms.extend([x.message for x in t_alarms])
+
+        return create_response_from_data_with_code(alarms, 200)
+    else:
+        return unauthorized(login)
+
+
+@bp.route('/flowers/<int:id>/problems', methods=['GET'])
+def get_flower_active_problems(id):
+    logging.info("Called getting flower problems endpoint ...")
+
+    headers = request.headers or {}
+    alarms = list()
+
+    # Check request
+    if 'Authorization' not in headers:
+        return bad_request("Missing 'Authorization' header in request")
+
+    # Parse auth
+    try:
+        login, password = parse_authorization_header(headers.get('Authorization'))
+    except Exception as e:
+        return server_error(f"Exception occurred during parsing user credentials: {str(e)}")
+
+    try:
+        user = User.query.filter_by(login=login).first()
+    except Exception as e:
+        return server_error(f"Exception occurred during loading user: {str(e)}")
+
+    if user and authorize(login, password, user):
+        flower = user.flowers.filter_by(user=user.id, id=id).first()
+        fl_tasks = RecommendationItem.query.filter_by(flower.id).all()
+        for t in fl_tasks:
+            t_alarms = RecommendationAlarm.query.filter_by(task=t.id, severity=0).all()
+            alarms.extend([x.message for x in t_alarms])
+
+        return create_response_from_data_with_code(alarms, 200)
+    else:
+        return unauthorized(login)
+
+
+@bp.route('/flowers/<int:id>/warning', methods=['GET'])
+def get_flower_active_warning(id):
+    logging.info("Called getting flower warning endpoint ...")
+
+    headers = request.headers or {}
+    alarms = list()
+
+    # Check request
+    if 'Authorization' not in headers:
+        return bad_request("Missing 'Authorization' header in request")
+
+    # Parse auth
+    try:
+        login, password = parse_authorization_header(headers.get('Authorization'))
+    except Exception as e:
+        return server_error(f"Exception occurred during parsing user credentials: {str(e)}")
+
+    try:
+        user = User.query.filter_by(login=login).first()
+    except Exception as e:
+        return server_error(f"Exception occurred during loading user: {str(e)}")
+
+    if user and authorize(login, password, user):
+        flower = user.flowers.filter_by(user=user.id, id=id).first()
+        fl_tasks = RecommendationItem.query.filter_by(flower.id).all()
+        for t in fl_tasks:
+            t_alarms = RecommendationAlarm.query.filter_by(task=t.id, severity=1).all()
+            alarms.extend([x.message for x in t_alarms])
+
+        return create_response_from_data_with_code(alarms, 200)
+    else:
+        return unauthorized(login)
+
+
+@bp.route('/flowers/<int:id>/recommendations', methods=['GET'])
+def get_flower_active_recommendations(id):
+    logging.info("Called getting flower recommendations endpoint ...")
+
+    headers = request.headers or {}
+    alarms = list()
+
+    # Check request
+    if 'Authorization' not in headers:
+        return bad_request("Missing 'Authorization' header in request")
+
+    # Parse auth
+    try:
+        login, password = parse_authorization_header(headers.get('Authorization'))
+    except Exception as e:
+        return server_error(f"Exception occurred during parsing user credentials: {str(e)}")
+
+    try:
+        user = User.query.filter_by(login=login).first()
+    except Exception as e:
+        return server_error(f"Exception occurred during loading user: {str(e)}")
+
+    if user and authorize(login, password, user):
+        flower = user.flowers.filter_by(user=user.id, id=id).first()
+        fl_tasks = RecommendationItem.query.filter_by(flower.id).all()
+        for t in fl_tasks:
+            t_alarms = RecommendationAlarm.query.filter_by(task=t.id, severity=2).all()
+            alarms.extend([x.message for x in t_alarms])
+
+        return create_response_from_data_with_code(alarms, 200)
     else:
         return unauthorized(login)
