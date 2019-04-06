@@ -34,8 +34,6 @@ services:
       - "postgres:postgres"
     networks:
       - "ficus-tracker-backend-proxy"
-    volumes:
-      - /opt/ficus-tracker/migrations:/opt/ficus-tracker/migrations
 
 
 
