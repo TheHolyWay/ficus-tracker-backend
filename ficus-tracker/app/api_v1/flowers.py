@@ -78,7 +78,6 @@ def create_flower():
         return unauthorized(login)
 
 
-# ToDo: Add support for sensor
 @bp.route(FLOWERS_API_PREFIX, methods=['GET'])
 def get_user_flowers():
     """ Return list of user flowers """
@@ -108,3 +107,31 @@ def get_user_flowers():
     else:
         return unauthorized(login)
 
+
+@bp.route(f'FLOWERS_API_PREFIX/<int:id>', methods=['GET'])
+def get_flower_by_id(id):
+    """ Return list of user flowers """
+    logging.info("Called getting flowers endpoint ...")
+
+    headers = request.headers or {}
+
+    # Check request
+    if 'Authorization' not in headers:
+        return bad_request("Missing 'Authorization' header in request")
+
+    # Parse auth
+    try:
+        login, password = parse_authorization_header(headers.get('Authorization'))
+    except Exception as e:
+        return server_error(f"Exception occurred during parsing user credentials: {str(e)}")
+
+    try:
+        user = User.query.filter_by(login=login).first()
+    except Exception as e:
+        return server_error(f"Exception occurred during loading user: {str(e)}")
+
+    if user and authorize(login, password, user):
+        flower = user.flowers.filter_by(id=id).first()
+        return create_response_from_data_with_code(flower, 200)
+    else:
+        return unauthorized(login)

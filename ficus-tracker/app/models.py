@@ -199,3 +199,13 @@ class FlowerMetric(db.Model):
         sensor = Sensor.query.filter_by(id=self.sensor).first()
         return {'time': self.time, 'id': sensor.serial_number, 'temperature': self.temperature,
                 'light': self.light, 'soilMoisture': self.soilMoisture}
+
+
+class RecommendationItem(db.Model):
+    """ Represents recommendation model """
+    id = db.Column(db.Integer, primary_key=True)
+    r_class = db.Column(db.String(128))
+    flower = db.Column(db.Integer, db.ForeignKey('flower.id'))
+
+    def to_dict(self):
+        return {'id': self.id, 'class': self.r_class, 'flower': self.flower.to_dict()}
