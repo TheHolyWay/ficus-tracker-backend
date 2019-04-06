@@ -24,7 +24,7 @@ def accept_data(token):
         return bad_request("Request must includes 'serial' field")
 
     # Register sensor if not registered
-    sensor = Sensor.query.filter_by(token=token, serial_number=data.get('serial'))
+    sensor = Sensor.query.filter_by(token=token, serial_number=data.get('serial')).first()
 
     if not sensor:
         sensor = Sensor()
