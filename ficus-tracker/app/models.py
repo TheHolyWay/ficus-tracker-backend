@@ -10,7 +10,9 @@ class User(db.Model):
     token = db.Column(db.String(128))
 
     def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        h =generate_password_hash(password)
+        print(h)
+        self.password_hash = h
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
