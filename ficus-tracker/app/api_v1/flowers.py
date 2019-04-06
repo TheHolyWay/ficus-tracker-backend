@@ -80,7 +80,7 @@ def create_flower():
         for recommendation_class in recommendation_classes():
             recom = RecommendationItem()
             recom.r_class=recommendation_class.__name__
-            recom.flower = flower
+            recom.flower = flower.id
 
             db.session.add(recom)
             db.session.commit()
