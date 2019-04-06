@@ -1,4 +1,5 @@
 from app import db
+from sqlalchemy import desc
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 
@@ -48,7 +49,6 @@ class FlowerType(db.Model):
         return {'id': self.id, 'name': self.flower_type}
 
 
-# ToDo: Add support for sensor
 class Flower(db.Model):
     """ Represents flower model """
     id = db.Column(db.Integer, primary_key=True)
@@ -64,10 +64,16 @@ class Flower(db.Model):
         else:
             return 'None'
 
+    def get_last_sensor_data(self):
+        metric = FlowerMetric.query.filter_by(sensor=self.sensor).order_by(
+            desc(FlowerMetric.time)).first()
+        return metric.to_dict()
+
     def to_dict(self):
         return {'id': self.id,
                 'name': self.name,
-                'type': self.get_type_name_by_id()}
+                'type': self.get_type_name_by_id(),
+                'sensor_data': self.get_last_sensor_data()}
 
 
 class Sensor(db.Model):
@@ -100,5 +106,5 @@ class FlowerMetric(db.Model):
     soilMoisture = db.Column(db.Float)
 
     def to_dict(self):
-        return {'time': self.time, 'serial': self.serial, 'temperature': self.temperature,
+        return {'time': self.time, 'id': self.sensor, 'temperature': self.temperature,
                 'light': self.light, 'soilMoisture': self.soilMoisture}

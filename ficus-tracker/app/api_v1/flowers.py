@@ -2,7 +2,7 @@ from flask import request
 
 from app import db
 from app.api_v1 import bp
-from app.models import FlowerType, User, Flower
+from app.models import FlowerType, User, Flower, Sensor
 from app.utils import create_response_from_data_with_code, parse_authorization_header, authorize
 from app.api_v1.errors import server_error, bad_request, error_response, unauthorized
 import logging
@@ -51,17 +51,24 @@ def create_flower():
     if user and authorize(login, password, user):
         data = request.get_json() or {}
         logging.info(data)
-        if 'name' not in data or 'type' not in data:
-            return bad_request(f"Request must includes name and type fields. Request: {data}")
+        if 'name' not in data or 'type' not in data or 'sensor' not in data:
+            return bad_request(f"Request must includes name, sensor and type fields. Request: "
+                               f"{data}")
 
         if Flower.query.filter_by(name=data.get('name')).first():
             return error_response(500, f"Flower with name {data.get('name')} already exists for "
                                        f"user {login}")
 
+        sensor = Sensor.query.filter_by(serial_number=data.get('sensor')).first()
+
+        if not sensor or sensor.token != user.token:
+            bad_request("Incorrect sensor serial number")
+
         flower = Flower()
         flower.name = data.get('name')
         flower.flower_type = data.get('type')
         flower.user = user.id
+        flower.sensor = sensor.id
 
         # Commit changes to db
         db.session.add(flower)
