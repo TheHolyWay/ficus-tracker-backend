@@ -105,5 +105,6 @@ class FlowerMetric(db.Model):
     soilMoisture = db.Column(db.Float)
 
     def to_dict(self):
-        return {'time': self.time, 'id': self.sensor, 'temperature': self.temperature,
+        sensor = Sensor.query.filter_by(id=self.sensor).first()
+        return {'time': self.time, 'id': sensor.serial_number, 'temperature': self.temperature,
                 'light': self.light, 'soilMoisture': self.soilMoisture}
