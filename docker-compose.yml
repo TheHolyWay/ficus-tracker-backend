@@ -32,8 +32,6 @@ services:
       DATABASE_URL: "${DATABASE_URL}"
     links:
       - "postgres:postgres"
-    volumes:
-      - "/opt/ficus-tracker/migrations:/opt/ficus-tracker/migrations"
     networks:
       - "ficus-tracker-backend-proxy"
 

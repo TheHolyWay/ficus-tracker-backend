@@ -9,6 +9,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+VOLUME "/opt/ficus-tracker/migrations:/opt/ficus-tracker/migrations"
+
 ENV FLASK_APP=/opt/ficus-tracker/ficus_tracker.py
 
 RUN chmod +x /opt/ficus-tracker/entrypoint.sh
