@@ -35,6 +35,7 @@ def accept_data(token):
         # Commit changes to db
         db.session.add(sensor)
         db.session.commit()
+        return create_response_from_data_with_code({"mes": "Sensor created"}, 201)
 
     # ToDo: Send data to metrics storage
 
