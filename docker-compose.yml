@@ -30,8 +30,6 @@ services:
       - 5000:5000
     environment:
       DATABASE_URL: "${DATABASE_URL}"
-    volumes:
-      - "/opt/ficus-tracker/migrations:migrations:rw"
     links:
       - "postgres:postgres"
     networks:
