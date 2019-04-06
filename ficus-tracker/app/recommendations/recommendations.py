@@ -35,6 +35,8 @@ class DateBasedRecommendation(Recommendation):
 
     def check(self):
         logging.info(f"Checking DateBasedRecommendation for task: {self.t_id}")
+        logging.info(f"Current date: {datetime.datetime.now()}")
+        logging.info(f"Next check date: {self.next_check_date}")
         if datetime.datetime.now() >= self.next_check_date:
             self.last_check_date = datetime.datetime.now()
             self.next_check_date = datetime.datetime(
