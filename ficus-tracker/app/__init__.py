@@ -16,6 +16,11 @@ def index():
     return "Welcome on the ficus-tracker-backend"
 
 
+@main_bp.route('/ping')
+def ping():
+    return "OK"
+
+
 app = Flask(__name__)
 app.config.from_object(Config)
 app.app_context().push()
