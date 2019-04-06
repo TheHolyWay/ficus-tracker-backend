@@ -19,8 +19,10 @@ def index():
 def init_background_tasks():
     from app.utils import recommendation_classes
     registered_tasks = models.RecommendationItem.query.all()
+    logging.info(f"Found tasks: {registered_tasks}")
     for task in registered_tasks:
         flower = models.Flower.query.filter_by(id=task.flower).first()
+        logging.info(f"Task for flower: {flower}")
         if not flower:
             db.session.delete(task)
             db.session.commit()
