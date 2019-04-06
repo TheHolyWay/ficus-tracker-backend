@@ -19,20 +19,17 @@ def index():
 def init_background_tasks():
     from app.utils import recommendation_classes
     registered_tasks = models.RecommendationItem.query.all()
-    logging.info(f"Found tasks: {registered_tasks}")
     for task in registered_tasks:
         flower = models.Flower.query.filter_by(id=task.flower).first()
-        logging.info(f"Task for flower: {flower}")
         if not flower:
             db.session.delete(task)
             db.session.commit()
         else:
-            logging.info(f"Start background task for task {str(task.to_dict())}")
             recommendation_class_name = task.r_class
             recommendation_class = list(filter(lambda x: x.__name__ == recommendation_class_name,
                                                recommendation_classes()))[0]
 
-            RecommendationBackGroundTask(recommendation_class.create_from_db(flower))
+            RecommendationBackGroundTask(task.id, recommendation_class.create_from_db(flower))
 
 
 app = Flask(__name__)

@@ -208,6 +208,33 @@ class RecommendationItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     r_class = db.Column(db.String(128))
     flower = db.Column(db.Integer, db.ForeignKey('flower.id'))
+    raised = db.Column(db.Boolean)
 
     def to_dict(self):
-        return {'id': self.id, 'class': self.r_class, 'flower': self.flower}
+        return {'id': self.id, 'class': self.r_class, 'flower': self.flower, 'raised': self.raised}
+
+
+class RecommendationAlarm(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    severity = db.Column(db.Integer, db.ForeignKey('alarm_severity.id'))
+    message = db.Column(db.String(300))
+    task = db.Column(db.Integer, db.ForeignKey('recommendation_item.id'))
+
+    def get_severity_by_id(self):
+        severity = AlarmSeverity.query.filter_by(id=self.severity).first()
+        if severity:
+            return severity.severity
+        else:
+            'None'
+
+    def to_dict(self):
+        return {'id': self.id, 'severity': self.get_severity_by_id(),
+                'message': self.message, 'task': self.task}
+
+
+class AlarmSeverity(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    severity = db.Colimn(db.String(64), unique=True)
+
+    def to_dict(self):
+        return {'id': self.id, 'severity': self.severity}

@@ -1,12 +1,17 @@
 import datetime
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 
 import logging
 
 from app.models import FlowerType
 
 
-class Recommendation:
+class Recommendation(ABC):
+    def __init__(self, t_id, text, severity=2):
+        self.text = text
+        self.severity = severity
+        self.t_id = t_id
+
     @abstractmethod
     def check(self):
         pass
@@ -18,7 +23,9 @@ class Recommendation:
 
 
 class DateBasedRecommendation(Recommendation):
-    def __init__(self, last_check_date, interval, flower_id):
+    def __init__(self, t_id, last_check_date, interval, flower_id, text, severity=2):
+        super().__init__(t_id, text, severity)
+
         self.last_check_date = last_check_date
         self.interval = interval
         self.flower_id = flower_id
@@ -27,7 +34,7 @@ class DateBasedRecommendation(Recommendation):
             day=15, hour=13)
 
     def check(self):
-        logging.info(f"Checking DateBasedRecommendation for flower {self.flower_id}")
+        logging.info(f"Checking DateBasedRecommendation for task: {self.t_id}")
         if datetime.datetime.now() >= self.next_check_date:
             self.last_check_date = datetime.datetime.now()
             self.next_check_date = datetime.datetime(
@@ -40,19 +47,22 @@ class DateBasedRecommendation(Recommendation):
 
 class TransplantationRecommendation(DateBasedRecommendation):
     """ Recommendation for flower transplantation """
-    def __init__(self, month, interval, last_transpl, flower_id):
+    def __init__(self, t_id, month, interval, last_transpl, flower_id, flower_name):
         last_date = datetime.datetime(year=last_transpl, month=month, day=15, hour=13)
+        mes = f"Пора пересадить цветок {flower_name}!"
 
-        super().__init__(last_date, interval, flower_id)
+        super().__init__(t_id, last_date, interval, flower_id, mes)
 
     @staticmethod
-    def create_from_db(flower):
+    def create_from_db(t_id, flower):
         flower_type = FlowerType.query.filter_by(id=flower.flower_type).first()
-        logging.info(f"Initialize task TransplantationRecommendation for flower {flower.id}")
-        return TransplantationRecommendation(flower_type.transplantation_month + 1,
+        logging.info(f"Initialize task TransplantationRecommendation for task: {t_id}")
+        return TransplantationRecommendation(t_id,
+                                             flower_type.transplantation_month + 1,
                                              flower_type.transplantation_interval,
                                              flower.last_transplantation_year,
-                                             flower.id)
+                                             flower.id,
+                                             flower.name)
 
 
 class MetricBasedRecommendation:

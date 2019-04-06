@@ -86,7 +86,7 @@ def create_flower():
             db.session.add(recom)
             db.session.commit()
 
-            RecommendationBackGroundTask(recommendation_class.create_from_db(flower))
+            RecommendationBackGroundTask(recom.id, recommendation_class.create_from_db(flower))
 
         return create_response_from_data_with_code(flower.to_dict(), 201)
     else:
