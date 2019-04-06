@@ -4,7 +4,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
     # Base parameters
-    DATA_DATABASE = 'ficus-tracker'
+    DATA_DATABASE = 'ficus_tracker'
 
     # SQLAlchemy parameters
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') + f'/{DATA_DATABASE}' or \
