@@ -27,7 +27,7 @@ class DateBasedRecommendation(Recommendation):
         super().__init__(t_id, text, severity)
 
         self.last_check_date = last_check_date
-        self.interval = interval
+        self.interval = interval * 12
         self.flower_id = flower_id
         self.next_check_date = datetime.datetime(
             year=self.last_check_date.year + self.interval // 12, month=self.interval % 12 + 1,
