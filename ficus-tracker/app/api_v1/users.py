@@ -46,8 +46,8 @@ def create_user_or_return_token():
             else:
                 return unauthorized(login)
         except Exception as e:
-            return server_error(f"Exception occurred during authorization: {str(e)}")
-            # raise e
+            # return server_error(f"Exception occurred during authorization: {str(e)}")
+            raise e
     else:
         # Create user
         user = User()
