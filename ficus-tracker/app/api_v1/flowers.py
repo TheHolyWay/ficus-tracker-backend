@@ -281,7 +281,7 @@ def get_flower_active_problems(id):
 
     if user and authorize(login, password, user):
         flower = user.flowers.filter_by(user=user.id, id=id).first()
-        fl_tasks = RecommendationItem.query.filter_by(flower.id).all()
+        fl_tasks = RecommendationItem.query.filter_by(flower=flower.id).all()
         for t in fl_tasks:
             t_alarms = RecommendationAlarm.query.filter_by(task=t.id, severity=0).all()
             alarms.extend([x.message for x in t_alarms])
@@ -315,7 +315,7 @@ def get_flower_active_warning(id):
 
     if user and authorize(login, password, user):
         flower = user.flowers.filter_by(user=user.id, id=id).first()
-        fl_tasks = RecommendationItem.query.filter_by(flower.id).all()
+        fl_tasks = RecommendationItem.query.filter_by(flower=flower.id).all()
         for t in fl_tasks:
             t_alarms = RecommendationAlarm.query.filter_by(task=t.id, severity=1).all()
             alarms.extend([x.message for x in t_alarms])
@@ -349,7 +349,7 @@ def get_flower_active_recommendations(id):
 
     if user and authorize(login, password, user):
         flower = user.flowers.filter_by(user=user.id, id=id).first()
-        fl_tasks = RecommendationItem.query.filter_by(flower.id).all()
+        fl_tasks = RecommendationItem.query.filter_by(flower=flower.id).all()
         for t in fl_tasks:
             t_alarms = RecommendationAlarm.query.filter_by(task=t.id, severity=2).all()
             alarms.extend([x.message for x in t_alarms])
