@@ -22,8 +22,6 @@ def create_user_or_return_token():
     # Parse auth
     try:
         login, password = parse_authorization_header(headers.get('Authorization'))
-        print(f'Login: {login}')
-        print(f'Password: {password}')
     except Exception as e:
         return server_error(f"Exception occurred during parsing user credentials: {str(e)}")
 
@@ -46,8 +44,7 @@ def create_user_or_return_token():
             else:
                 return unauthorized(login)
         except Exception as e:
-            # return server_error(f"Exception occurred during authorization: {str(e)}")
-            raise e
+            return server_error(f"Exception occurred during authorization: {str(e)}")
     else:
         # Create user
         user = User()
@@ -60,7 +57,7 @@ def create_user_or_return_token():
         db.session.add(user)
         db.session.commit()
 
-        resp = create_response_from_data_with_code(resp_data, 201)
+        resp = create_response_from_data_with_code(resp_data, 200)
 
     return resp
 
