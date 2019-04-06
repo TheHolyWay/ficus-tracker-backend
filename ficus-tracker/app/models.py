@@ -63,4 +63,6 @@ class Flower(db.Model):
             return 'None'
 
     def to_dict(self):
-        return {'id': self.id, 'name': self.name, 'type': self.get_type_name_by_id()}
+        return {'id': self.id,
+                'name': self.name.decode(),
+                'type': self.get_type_name_by_id().decode()}
