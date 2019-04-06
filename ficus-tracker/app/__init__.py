@@ -4,7 +4,6 @@ from app.recommendations.engine import RecommendationBackGroundTask
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from app.utils import recommendation_classes
 
 # Main blueprint with index route
 main_bp = Blueprint('main', __name__)
@@ -16,6 +15,7 @@ def index():
 
 
 def init_background_tasks():
+    from app.utils import recommendation_classes
     registered_tasks = models.RecommendationItem.query.all()
     for task in registered_tasks:
         flower = models.Flower.query.filter_by(id=task.flower).first()
