@@ -8,6 +8,7 @@ class User(db.Model):
     login = db.Column(db.String(64), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     token = db.Column(db.String(128))
+    flowers = db.relationship('Flower', backref='f_user', lazy='dynamic')
 
     @staticmethod
     def generate_password_hash(password):
@@ -33,7 +34,6 @@ class User(db.Model):
 
         return u_data
 
-
     def __repr__(self):
         return '<User {}>'.format(self.login)
 
@@ -45,3 +45,21 @@ class FlowerType(db.Model):
 
     def to_dict(self):
         return {'id': self.id, 'name': self.flower_type}
+
+
+class Flower(db.Model):
+    """ Represents flower model """
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True, unique=True)
+    flower_type = db.Column(db.Integer, db.ForeignKey('flower_type.id'))
+    user = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    def get_type_name_by_id(self):
+        f_type = FlowerType.query.filter_by(id=self.flower_type).first()
+        if f_type:
+            return f_type.flower_type
+        else:
+            return 'None'
+
+    def to_dict(self):
+        return {'id': self.id, 'name': self.name, 'type': self.get_type_name_by_id()}

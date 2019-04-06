@@ -1,7 +1,10 @@
+from flask import request
+
+from app import db
 from app.api_v1 import bp
-from app.models import FlowerType
-from app.utils import create_response_from_data_with_code
-from app.api_v1.errors import server_error
+from app.models import FlowerType, User, Flower
+from app.utils import create_response_from_data_with_code, parse_authorization_header
+from app.api_v1.errors import server_error, bad_request, error_response
 import logging
 
 
@@ -20,3 +23,47 @@ def get_flower_types():
         {'types': list(map(lambda x: x.to_dict(), flowers))}, 200)
 
     return resp
+
+
+@bp.route(FLOWERS_API_PREFIX, methods=['POST'])
+def create_flower():
+    """ Create flower if it doesn't exists """
+    logging.info("Called creating flower endpoint ...")
+
+    headers = request.headers or {}
+
+    # Check request
+    if 'Authorization' not in headers:
+        return bad_request("Missing 'Authorization' header in request")
+
+    # Parse auth
+    try:
+        login, password = parse_authorization_header(headers.get('Authorization'))
+    except Exception as e:
+        return server_error(f"Exception occurred during parsing user credentials: {str(e)}")
+
+    try:
+        user = User.query.filter_by(login=login).first
+    except Exception as e:
+        return server_error(f"Exception occurred during loading user: {str(e)}")
+
+    if user:
+        resp_data = dict()
+        data = request.get_json() or {}
+        if 'name' not in data or 'type' not in data:
+            return bad_request("Request must includes name and type fields")
+
+        flower = Flower()
+        flower.name = data.get('name')
+        flower.flower_type = data.get('type')
+        flower.user = user.id
+
+        resp_data = flower.to_dict()
+
+        # Commit changes to db
+        db.session.add(user)
+        db.session.commit()
+
+        return create_response_from_data_with_code(resp_data, 201)
+    else:
+        return error_response(500, f"There is not user with username: {login}")
