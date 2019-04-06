@@ -10,5 +10,14 @@ def error_response(status_code, message=None):
     response.status_code = status_code
     return response
 
+
 def bad_request(message):
     return error_response(400, message)
+
+
+def server_error(message):
+    return error_response(500, message)
+
+
+def unauthorized(login):
+    return error_response(403, f"Authentication failed for user {login}")

@@ -3,6 +3,10 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config(object):
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-                              'postgresql://localhost' + os.path.join(basedir, 'app.db')
+    # Base parameters
+    DATA_DATABASE = 'ficus-tracker'
+
+    # SQLAlchemy parameters
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') + f'/{DATA_DATABASE}' or \
+                              'postgresql:///'
     SQLALCHEMY_TRACK_MODIFICATIONS = False

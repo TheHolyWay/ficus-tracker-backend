@@ -4,46 +4,95 @@ from flask import jsonify, request
 
 from app import db
 from app.api_v1 import bp
-from app.api_v1.errors import bad_request
-from app.models import FicusTrackerUser
+from app.api_v1.errors import bad_request, unauthorized, server_error
+from app.models import User
+from app.utils import create_response_from_data_with_code, authorize, parse_authorization_header
 
 
-@bp.route('/users', methods=['POST'])
+USER_API_PREFIX = '/users'
+
+
+@bp.route(f'{USER_API_PREFIX}/authorize', methods=['POST'])
 def create_user_or_return_token():
+    """ Create user and return it's token if user doesn't exists otherwise return user token """
+    resp_data = {}  # response data
     headers = request.headers or {}
-    resp_data = {}
 
     # Check request
     if 'Authorization' not in headers:
-        return bad_request('Must have authorization header')
+        return bad_request("Missing 'Authorization' header in request")
 
     # Parse auth
-    auth_str = headers.get('Authorization').split(' ')[1]
-    auth_str = base64.b64decode(auth_str).decode()
-    auth_str = auth_str.split(':')
-    login = auth_str[0]
-    password = auth_str[1]
+    try:
+        login, password = parse_authorization_header(headers.get('Authorization'))
+    except Exception as e:
+        return server_error(f"Exception occurred during parsing user credentials: {str(e)}")
 
-    if FicusTrackerUser.query.filter_by(login=login).first():
-        resp_data['message'] = "Уже есть такой юзер"
+
+    try:
+        user = User.query.filter_by(login=login).first()
+    except Exception as e:
+        return server_error(f"Exception occurred during loading user: {str(e)}")
+
+    # Return token if user already exists
+    if user:
+        # Check credentials
+        try:
+            if authorize(login, password, user):
+                resp_data['token'] = user.token
+                resp = create_response_from_data_with_code(resp_data, 200)
+            else:
+                return unauthorized(login)
+        except Exception as e:
+            return server_error(f"Exception occurred authorization: {str(e)}")
     else:
         # Create user
-        user = FicusTrackerUser()
+        user = User()
         user.login = login
         user.password_hash = user.set_password(password)
         user.token = user.generate_token()
         resp_data['token'] = user.token
+
+        # Commit changes to db
         db.session.add(user)
         db.session.commit()
 
-    resp = jsonify(resp_data)
+        resp = create_response_from_data_with_code(resp_data, 301)
 
     return resp
 
 
-@bp.route('/users/<int:id_>', methods=['GET'])
-def get_user(id_):
-    resp = jsonify({"id": id_})
-    resp.status_code = 200
+@bp.route(USER_API_PREFIX, methods=['GET'])
+def get_user():
+    """ Return user info for authorized user """
+    resp_data = {}  # response data
+    headers = request.headers or {}
+
+    # Check request
+    if 'Authorization' not in headers:
+        return bad_request("Missing 'Authorization' header in request")
+
+    # Parse auth
+    try:
+        login, password = parse_authorization_header(headers.get('Authorization'))
+    except Exception as e:
+        return server_error(f"Exception occurred during parsing user credentials: {str(e)}")
+
+    try:
+        user = User.query.filter_by(login=login).first()
+    except Exception as e:
+        return server_error(f"Exception occurred during loading user: {str(e)}")
+
+    if not user:
+        resp = create_response_from_data_with_code({}, 200)
+    else:
+        try:
+            auth = authorize(login, password, user)
+        except Exception as e:
+            return server_error(f"Exception occurred authorization: {str(e)}")
+
+        if auth:
+            resp_data = user.to_dict()
+            resp = create_response_from_data_with_code(resp_data, 200)
 
     return resp
