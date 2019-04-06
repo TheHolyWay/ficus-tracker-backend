@@ -26,7 +26,7 @@ def create_user_or_return_token():
         return server_error(f"Exception occurred during parsing user credentials: {str(e)}")
 
     try:
-        user = User.query.filter_by(login=login).first
+        user = User.query.filter_by(login=login).first()
     except Exception as e:
         return server_error(f"Exception occurred during loading user: {str(e)}")
 
