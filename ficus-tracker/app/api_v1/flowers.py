@@ -132,6 +132,6 @@ def get_flower_by_id(id):
 
     if user and authorize(login, password, user):
         flower = user.flowers.filter_by(id=id).first()
-        return create_response_from_data_with_code(flower, 200)
+        return create_response_from_data_with_code(flower.to_dict(), 200)
     else:
         return unauthorized(login)
