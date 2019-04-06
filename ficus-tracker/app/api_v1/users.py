@@ -11,7 +11,6 @@ USER_API_PREFIX = '/users'
 
 @bp.route('/users/authorize', methods=['POST'])
 def create_user_or_return_token():
-    print('hey')
     """ Create user and return it's token if user doesn't exists otherwise return user token """
     resp_data = {}  # response data
     headers = request.headers or {}
@@ -23,11 +22,17 @@ def create_user_or_return_token():
     # Parse auth
     try:
         login, password = parse_authorization_header(headers.get('Authorization'))
+        print(f'Login: {login}')
+        print(f'Password: {password}')
     except Exception as e:
         return server_error(f"Exception occurred during parsing user credentials: {str(e)}")
 
     try:
-        user = User.query.filter_by(login=login).first()
+        users = User.query.filter_by(login=login)
+        if users:
+            user = users.first()
+        else:
+            return server_error("Can't find any users in database")
     except Exception as e:
         return server_error(f"Exception occurred during loading user: {str(e)}")
 
@@ -41,7 +46,7 @@ def create_user_or_return_token():
             else:
                 return unauthorized(login)
         except Exception as e:
-            return server_error(f"Exception occurred authorization: {str(e)}")
+            return server_error(f"Exception occurred during authorization: {str(e)}")
     else:
         # Create user
         user = User()
@@ -54,7 +59,7 @@ def create_user_or_return_token():
         db.session.add(user)
         db.session.commit()
 
-        resp = create_response_from_data_with_code(resp_data, 301)
+        resp = create_response_from_data_with_code(resp_data, 201)
 
     return resp
 
