@@ -27,7 +27,7 @@ def init_background_tasks():
             recommendation_class = list(filter(lambda x: x.__name__ == recommendation_class_name,
                                                recommendation_classes()))[0]
 
-            if not any([x.t_id == task.id for x in tasks_pool]):
+            if not any([x.recom.t_id == task.id for x in tasks_pool]):
                 tasks_pool.append(RecommendationBackGroundTask(
                     recommendation_class.create_from_db(task.id, flower)))
 
