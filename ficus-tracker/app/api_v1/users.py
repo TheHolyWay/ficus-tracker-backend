@@ -11,6 +11,7 @@ USER_API_PREFIX = '/users'
 
 @bp.route(f'{USER_API_PREFIX}/authorize', methods=['POST'])
 def create_user_or_return_token():
+    print('hey')
     """ Create user and return it's token if user doesn't exists otherwise return user token """
     resp_data = {}  # response data
     headers = request.headers or {}
@@ -24,7 +25,6 @@ def create_user_or_return_token():
         login, password = parse_authorization_header(headers.get('Authorization'))
     except Exception as e:
         return server_error(f"Exception occurred during parsing user credentials: {str(e)}")
-
 
     try:
         user = User.query.filter_by(login=login).first()
