@@ -29,13 +29,12 @@ def accept_data(token):
     if not sensor:
         sensor = Sensor()
         sensor.serial_number = data.get('serial')
-        sensor.token = data.get('token')
+        sensor.token = token
         sensor.user = user.id
 
         # Commit changes to db
         db.session.add(sensor)
         db.session.commit()
-        return create_response_from_data_with_code({"mes": "Sensor created", "token":token}, 201)
 
     # ToDo: Send data to metrics storage
 
