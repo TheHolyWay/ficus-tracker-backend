@@ -3,7 +3,7 @@ from abc import abstractmethod
 
 import logging
 
-from app.models import Flower, FlowerType
+from app.models import FlowerType
 
 
 class Recommendation:
@@ -11,8 +11,8 @@ class Recommendation:
     def check(self):
         pass
 
-    @abstractmethod
     @staticmethod
+    @abstractmethod
     def create_from_db(**kwargs):
         pass
 
