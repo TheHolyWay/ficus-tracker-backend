@@ -20,11 +20,12 @@ def get_flower_types():
     except Exception as e:
         return server_error(f"Exception occurred while getting flower types list: {str(e)}")
     resp = create_response_from_data_with_code(
-        {'types': list(map(lambda x: x.to_dict(), flowers))}, 200)
+        list(map(lambda x: x.to_dict(), flowers)), 200)
 
     return resp
 
 
+# ToDo: Add support for sensor
 @bp.route(FLOWERS_API_PREFIX, methods=['POST'])
 def create_flower():
     """ Create flower if it doesn't exists """

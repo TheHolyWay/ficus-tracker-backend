@@ -47,6 +47,7 @@ class FlowerType(db.Model):
         return {'id': self.id, 'name': self.flower_type}
 
 
+# ToDo: Add support for sensor
 class Flower(db.Model):
     """ Represents flower model """
     id = db.Column(db.Integer, primary_key=True)

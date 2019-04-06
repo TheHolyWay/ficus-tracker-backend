@@ -6,7 +6,7 @@ from app.api_v1.errors import server_error
 from app.models import User
 
 
-def create_response_from_data_with_code(data: dict, code: int=200):
+def create_response_from_data_with_code(data, code: int=200):
     """ Apply method jsonify to specified data and add status_code to result"""
     resp = jsonify(data)
     resp.status_code = code
