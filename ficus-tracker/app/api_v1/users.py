@@ -1,7 +1,4 @@
-import base64
-
-from flask import jsonify, request
-
+from flask import request
 from app import db
 from app.api_v1 import bp
 from app.api_v1.errors import bad_request, unauthorized, server_error
