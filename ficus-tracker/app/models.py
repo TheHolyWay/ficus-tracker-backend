@@ -41,7 +41,7 @@ class User(db.Model):
 class FlowerType(db.Model):
     """ Represents flower type structure """
     id = db.Column(db.Integer, primary_key=True)
-    type = db.Column(db.String(128), index=True, unique=True)
+    flower_type = db.Column(db.String(128), index=True, unique=True)
 
     def to_dict(self):
-        return {'id': self.id, 'name': self.type}
+        return {'id': self.id, 'name': self.flower_type}
