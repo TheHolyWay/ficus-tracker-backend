@@ -1,4 +1,8 @@
 from app import app, db
+import logging
+
+
+logging.basicConfig(format='[%(name)s][%(asctime)s][%(message)s]', level=logging.INFO)
 
 
 @app.shell_context_processor

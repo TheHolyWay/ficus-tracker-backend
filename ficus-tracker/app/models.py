@@ -36,3 +36,12 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User {}>'.format(self.login)
+
+
+class FlowerType(db.Model):
+    """ Represents flower type structure """
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.String(128), index=True, unique=True)
+
+    def to_dict(self):
+        return {'id': self.id, 'name': self.type}
