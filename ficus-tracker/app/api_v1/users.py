@@ -65,6 +65,7 @@ def create_user_or_return_token():
 @bp.route(USER_API_PREFIX, methods=['GET'])
 def get_user():
     """ Return user info for authorized user """
+    resp = None
     resp_data = {}  # response data
     headers = request.headers or {}
 
