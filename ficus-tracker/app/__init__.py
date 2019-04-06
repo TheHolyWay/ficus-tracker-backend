@@ -1,3 +1,5 @@
+import logging
+
 from flask import Flask, Blueprint
 
 from app.recommendations.engine import RecommendationBackGroundTask
@@ -23,6 +25,7 @@ def init_background_tasks():
             db.session.delete(task)
             db.session.commit()
         else:
+            logging.info(f"Start background task for task {str(task.to_dict())}")
             recommendation_class_name = task.r_class
             recommendation_class = list(filter(lambda x: x.__name__ == recommendation_class_name,
                                                recommendation_classes()))[0]
