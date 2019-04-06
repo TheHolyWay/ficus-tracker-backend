@@ -24,8 +24,8 @@ def init_background_tasks():
             db.session.commit()
         else:
             recommendation_class_name = task.r_class
-            recommendation_class = recommendation_classes().filter(
-                lambda x: x.__name__ == recommendation_class_name)
+            recommendation_class = list(filter(lambda x: x.__name__ == recommendation_class_name,
+                                               recommendation_classes()))[0]
 
             RecommendationBackGroundTask(recommendation_class.create_from_db(flower))
 
