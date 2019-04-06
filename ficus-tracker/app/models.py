@@ -70,8 +70,7 @@ class Flower(db.Model):
         return metric.to_dict()
 
     def to_dict(self):
-        return {'id': self.id,
-                'name': self.name,
+        return {'id': self.id, 'name': self.name,
                 'type': self.get_type_name_by_id(),
                 'sensor_data': self.get_last_sensor_data()}
 
