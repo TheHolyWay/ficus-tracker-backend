@@ -159,7 +159,10 @@ class Flower(db.Model):
     def get_last_sensor_data(self):
         metric = FlowerMetric.query.filter_by(sensor=self.sensor).order_by(
             desc(FlowerMetric.time)).first()
-        return metric.to_dict()
+        if metric:
+            return metric.to_dict()
+        else:
+            return {}
 
     def to_dict(self):
         return {'id': self.id, 'name': self.name,

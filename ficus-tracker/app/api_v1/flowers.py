@@ -88,7 +88,11 @@ def create_flower():
 
             RecommendationBackGroundTask(recommendation_class.create_from_db(recom.id, flower))
 
-        return create_response_from_data_with_code(flower.to_dict(), 201)
+        resp_data = flower.to_dict()
+        resp_data['recommendations'] = _get_alarms_for_flower(user, id, 2)
+        resp_data['warnings'] = _get_alarms_for_flower(user, id, 1)
+        resp_data['problems'] = _get_alarms_for_flower(user, id, 0)
+        return create_response_from_data_with_code(resp_data, 201)
     else:
         return unauthorized(login)
 
@@ -117,8 +121,16 @@ def get_user_flowers():
 
     if user and authorize(login, password, user):
         u_flowers = user.flowers.all()
-        return create_response_from_data_with_code(
-            list(map(lambda x: x.to_dict(), list(u_flowers))), 200)
+        data = list()
+
+        for fl in u_flowers:
+            fl_data = fl.to_dict()
+            fl_data['recommendations'] = _get_alarms_for_flowers(user, 2)
+            fl_data['warnings'] = _get_alarms_for_flowers(user, 1)
+            fl_data['problems'] = _get_alarms_for_flowers(user, 0)
+            data.append(fl_data)
+
+        return create_response_from_data_with_code(data, 200)
     else:
         return unauthorized(login)
 
@@ -147,9 +159,36 @@ def get_flower_by_id(id):
 
     if user and authorize(login, password, user):
         flower = user.flowers.filter_by(id=id).first()
-        return create_response_from_data_with_code(flower.to_dict(), 200)
+        resp_data = flower.to_dict()
+        resp_data['recommendations'] = _get_alarms_for_flower(user, id, 2)
+        resp_data['warnings'] = _get_alarms_for_flower(user, id, 1)
+        resp_data['problems'] = _get_alarms_for_flower(user, id, 0)
+        return create_response_from_data_with_code(resp_data, 200)
     else:
         return unauthorized(login)
+
+
+def _get_alarms_for_flowers(user, severity=2):
+    alarms = list()
+    u_flowers = user.flowers.filter_by(user=user.id).all()
+    for fl in u_flowers:
+        fl_tasks = RecommendationItem.query.filter_by(flower=fl.id).all()
+        for t in fl_tasks:
+            t_alarms = RecommendationAlarm.query.filter_by(task=t.id, severity=severity).all()
+            alarms.extend([x.message for x in t_alarms])
+
+    return alarms
+
+
+def _get_alarms_for_flower(user, fl_id, severity=2):
+    alarms = list()
+    flower = user.flowers.filter_by(user=user.id, id=fl_id).first()
+    fl_tasks = RecommendationItem.query.filter_by(flower=flower.id).all()
+    for t in fl_tasks:
+        t_alarms = RecommendationAlarm.query.filter_by(task=t.id, severity=severity).all()
+        alarms.extend([x.message for x in t_alarms])
+
+    return alarms
 
 
 @bp.route('/flowers/recommendations', methods=['GET'])
@@ -157,7 +196,6 @@ def get_user_flowers_active_recommendations():
     logging.info("Called getting flowers recommendations endpoint ...")
 
     headers = request.headers or {}
-    alarms = list()
 
     # Check request
     if 'Authorization' not in headers:
@@ -175,14 +213,7 @@ def get_user_flowers_active_recommendations():
         return server_error(f"Exception occurred during loading user: {str(e)}")
 
     if user and authorize(login, password, user):
-        u_flowers = user.flowers.filter_by(user=user.id).all()
-        for fl in u_flowers:
-            fl_tasks = RecommendationItem.query.filter_by(flower=fl.id).all()
-            for t in fl_tasks:
-                t_alarms = RecommendationAlarm.query.filter_by(task=t.id, severity=2).all()
-                alarms.extend([x.message for x in t_alarms])
-
-        return create_response_from_data_with_code(alarms, 200)
+        return create_response_from_data_with_code(_get_alarms_for_flowers(user, 2), 200)
     else:
         return unauthorized(login)
 
@@ -192,7 +223,6 @@ def get_user_flowers_active_problems():
     logging.info("Called getting flowers problems endpoint ...")
 
     headers = request.headers or {}
-    alarms = list()
 
     # Check request
     if 'Authorization' not in headers:
@@ -210,14 +240,7 @@ def get_user_flowers_active_problems():
         return server_error(f"Exception occurred during loading user: {str(e)}")
 
     if user and authorize(login, password, user):
-        u_flowers = user.flowers.filter_by(user=user.id).all()
-        for fl in u_flowers:
-            fl_tasks = RecommendationItem.query.filter_by(flower=fl.id).all()
-            for t in fl_tasks:
-                t_alarms = RecommendationAlarm.query.filter_by(task=t.id, severity=0).all()
-                alarms.extend([x.message for x in t_alarms])
-
-        return create_response_from_data_with_code(alarms, 200)
+        return create_response_from_data_with_code(_get_alarms_for_flowers(user, 0), 200)
     else:
         return unauthorized(login)
 
@@ -245,14 +268,7 @@ def get_user_flowers_active_warnings():
         return server_error(f"Exception occurred during loading user: {str(e)}")
 
     if user and authorize(login, password, user):
-        u_flowers = user.flowers.filter_by(user=user.id).all()
-        for fl in u_flowers:
-            fl_tasks = RecommendationItem.query.filter_by(flower=fl.id).all()
-            for t in fl_tasks:
-                t_alarms = RecommendationAlarm.query.filter_by(task=t.id, severity=1).all()
-                alarms.extend([x.message for x in t_alarms])
-
-        return create_response_from_data_with_code(alarms, 200)
+        return create_response_from_data_with_code(_get_alarms_for_flowers(user, 1), 200)
     else:
         return unauthorized(login)
 
@@ -280,13 +296,7 @@ def get_flower_active_problems(id):
         return server_error(f"Exception occurred during loading user: {str(e)}")
 
     if user and authorize(login, password, user):
-        flower = user.flowers.filter_by(user=user.id, id=id).first()
-        fl_tasks = RecommendationItem.query.filter_by(flower=flower.id).all()
-        for t in fl_tasks:
-            t_alarms = RecommendationAlarm.query.filter_by(task=t.id, severity=0).all()
-            alarms.extend([x.message for x in t_alarms])
-
-        return create_response_from_data_with_code(alarms, 200)
+        return create_response_from_data_with_code(_get_alarms_for_flower(user, id, 0), 200)
     else:
         return unauthorized(login)
 
@@ -314,13 +324,7 @@ def get_flower_active_warning(id):
         return server_error(f"Exception occurred during loading user: {str(e)}")
 
     if user and authorize(login, password, user):
-        flower = user.flowers.filter_by(user=user.id, id=id).first()
-        fl_tasks = RecommendationItem.query.filter_by(flower=flower.id).all()
-        for t in fl_tasks:
-            t_alarms = RecommendationAlarm.query.filter_by(task=t.id, severity=1).all()
-            alarms.extend([x.message for x in t_alarms])
-
-        return create_response_from_data_with_code(alarms, 200)
+        return create_response_from_data_with_code(_get_alarms_for_flower(user, id, 1), 200)
     else:
         return unauthorized(login)
 
@@ -348,12 +352,6 @@ def get_flower_active_recommendations(id):
         return server_error(f"Exception occurred during loading user: {str(e)}")
 
     if user and authorize(login, password, user):
-        flower = user.flowers.filter_by(user=user.id, id=id).first()
-        fl_tasks = RecommendationItem.query.filter_by(flower=flower.id).all()
-        for t in fl_tasks:
-            t_alarms = RecommendationAlarm.query.filter_by(task=t.id, severity=2).all()
-            alarms.extend([x.message for x in t_alarms])
-
-        return create_response_from_data_with_code(alarms, 200)
+        return create_response_from_data_with_code(_get_alarms_for_flower(user, id, 2), 200)
     else:
         return unauthorized(login)
