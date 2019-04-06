@@ -9,7 +9,7 @@ from app.utils import create_response_from_data_with_code
 SENSORS_API_PREFIX = '/sensors'
 
 
-@bp.route(f'/hub/<str:token>/sensor', methods=["POST"])
+@bp.route(f'/hub/<string:token>/sensor', methods=["POST"])
 def accept_data(token):
     """ Register sensor if it's new sensor and send data to metrics storage """
     # Check token
