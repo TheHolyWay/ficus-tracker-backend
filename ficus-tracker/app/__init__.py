@@ -16,20 +16,7 @@ def index():
     return "Welcome on the ficus-tracker-backend"
 
 
-def init_background_tasks():
-    from app.utils import recommendation_classes
-    registered_tasks = models.RecommendationItem.query.all()
-    for task in registered_tasks:
-        flower = models.Flower.query.filter_by(id=task.flower).first()
-        if not flower:
-            db.session.delete(task)
-            db.session.commit()
-        else:
-            recommendation_class_name = task.r_class
-            recommendation_class = list(filter(lambda x: x.__name__ == recommendation_class_name,
-                                               recommendation_classes()))[0]
 
-            RecommendationBackGroundTask(recommendation_class.create_from_db(task.id, flower))
 
 
 app = Flask(__name__)
