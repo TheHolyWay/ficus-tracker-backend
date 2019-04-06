@@ -1,3 +1,4 @@
+import logging
 import time
 import threading
 
@@ -16,6 +17,7 @@ class RecommendationBackGroundTask:
         from app import db
         while True:
             if self.recom.check():
+                logging.info("Creating alarm!")
                 alarm = RecommendationAlarm.query.filter_by(task=self.recom.t_id).first()
                 if not alarm:
                     alarm = RecommendationAlarm()
