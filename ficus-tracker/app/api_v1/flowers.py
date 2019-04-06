@@ -59,12 +59,10 @@ def create_flower():
         flower.flower_type = data.get('type')
         flower.user = user.id
 
-        resp_data = flower.to_dict()
-
         # Commit changes to db
-        db.session.add(user)
+        db.session.add(flower)
         db.session.commit()
 
-        return create_response_from_data_with_code(resp_data, 201)
+        return create_response_from_data_with_code(flower.to_dict(), 201)
     else:
         return error_response(500, f"There is not user with username: {login}")
