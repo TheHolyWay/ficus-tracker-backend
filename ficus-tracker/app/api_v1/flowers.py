@@ -108,7 +108,7 @@ def get_user_flowers():
         return unauthorized(login)
 
 
-@bp.route(f'FLOWERS_API_PREFIX/<int:id>', methods=['GET'])
+@bp.route(f'/flowers/<int:id>', methods=['GET'])
 def get_flower_by_id(id):
     """ Return list of user flowers """
     logging.info("Called getting flowers endpoint ...")
