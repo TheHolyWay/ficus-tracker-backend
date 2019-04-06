@@ -49,9 +49,10 @@ class FlowerType(db.Model):
     illumination = db.Column(db.Integer, db.ForeignKey('illumination_type.id'))
     soil_moisture = db.Column(db.Integer, db.ForeignKey('soil_moisture_type.id'))
     air_humidity = db.Column(db.Integer, db.ForeignKey('air_humidity_type.id'))
-    transplantation = db.Column(db.Integer, db.ForeignKey('flower_transplantation.id'))
     light_day_min = db.Column(db.Integer)
     light_day_max = db.Column(db.Integer)
+    transplantation_month = db.Column(db.Integer)
+    transplantation_interval = db.Column(db.Integer)
 
     def temperature_range_to_str(self):
         return f"{self.temperature_min}-{self.temperature_max}"
@@ -80,12 +81,21 @@ class FlowerType(db.Model):
         else:
             'None'
 
-    def get_transplantation_info_by_id(self):
-        transplantation = FlowerTransplantation.query.filter_by(id=self.transplantation).first()
-        if transplantation:
-            return transplantation.to_dict()
-        else:
-            'None'
+    def get_transplantation_info(self):
+        all_mn = ["Январь",
+                  "Февраль",
+                  "Март",
+                  "Апрель",
+                  "Май",
+                  "Июнь",
+                  "Июль",
+                  "Август",
+                  "Сентябрь",
+                  "Октябрь",
+                  "Ноябрь",
+                  "Декабрь"]
+        return {'interval': f'Раз в {self.transplantation_interval*12} месяцев',
+                'month': all_mn[self.transplantation_month]}
 
     def to_dict(self):
         return {'id': self.id, 'name': self.flower_type,
@@ -93,7 +103,7 @@ class FlowerType(db.Model):
                 'illumination': self.get_illumination_str_by_id(),
                 'soil_moisture': self.get_soil_moisture_str_by_id(),
                 'air_humidity': self.get_air_humidity_str_by_id(),
-                'transplantation': self.get_transplantation_info_by_id(),
+                'transplantation': self.get_transplantation_info(),
                 'light_day': self.light_day_range_to_str()}
 
 
@@ -128,31 +138,6 @@ class AirHumidityType(db.Model):
     def to_dict(self):
         return {'air_humidity': self.air_humidity, 'min_value': self.min_value,
                 'max_value': self.max_value}
-
-
-class FlowerTransplantation(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    month = db.column(db.Integer)
-    interval = db.column(db.Integer)
-
-    def str_month(self):
-        all_mn = ["Январь",
-                  "Февраль",
-                  "Март",
-                  "Апрель",
-                  "Май",
-                  "Июнь",
-                  "Июль",
-                  "Август",
-                  "Сентябрь",
-                  "Октябрь",
-                  "Ноябрь",
-                  "Декабрь"]
-        return all_mn[self.month]
-
-    def to_dict(self):
-        return {'interval': f'Раз в {self.interval*12} месяцев',
-                'month': self.str_month()}
 
 
 class Flower(db.Model):
