@@ -1,9 +1,6 @@
 import time
 import threading
 
-from app.models import RecommendationAlarm
-from app import db
-
 
 class RecommendationBackGroundTask:
     def __init__(self, recom, interval=60):
@@ -15,6 +12,8 @@ class RecommendationBackGroundTask:
         thread.start()
 
     def run(self):
+        from app.models import RecommendationAlarm
+        from app import db
         while True:
             if self.recom.check():
                 alarm = RecommendationAlarm.query.filter_by(task=self.recom.t_id).first()
