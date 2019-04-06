@@ -51,7 +51,7 @@ class FlowerType(db.Model):
 class Flower(db.Model):
     """ Represents flower model """
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), index=True, unique=True)
+    name = db.Column(db.String(128), index=True, unique=True)
     flower_type = db.Column(db.Integer, db.ForeignKey('flower_type.id'))
     user = db.Column(db.Integer, db.ForeignKey('user.id'))
 
@@ -64,5 +64,5 @@ class Flower(db.Model):
 
     def to_dict(self):
         return {'id': self.id,
-                'name': self.name.decode(),
-                'type': self.get_type_name_by_id().decode()}
+                'name': self.name,
+                'type': self.get_type_name_by_id()}
