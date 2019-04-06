@@ -234,7 +234,7 @@ class RecommendationAlarm(db.Model):
 
 class AlarmSeverity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    severity = db.Colimn(db.String(64), unique=True)
+    severity = db.Column(db.String(64), unique=True)
 
     def to_dict(self):
         return {'id': self.id, 'severity': self.severity}
