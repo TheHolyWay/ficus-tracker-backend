@@ -11,5 +11,7 @@ def make_shell_context():
 
 
 if __name__ == '__main__':
+  from app import init_background_tasks
+  init_background_tasks()
   app.run(debug=True,host='0.0.0.0')
 

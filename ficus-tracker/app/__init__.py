@@ -47,6 +47,4 @@ from app.api_v1 import bp as api_bp
 app.register_blueprint(main_bp, url_prefix='/')
 app.register_blueprint(api_bp, url_prefix='/api/v1')
 
-init_background_tasks()
-
 from app import models
