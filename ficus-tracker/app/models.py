@@ -89,3 +89,16 @@ class Sensor(db.Model):
         return {'serial_number': self.serial_number,
                 'user': self.get_user_name_by_id(),
                 'flower': self.flower.to_dict()}
+
+
+class FlowerMetric(db.Model):
+    """ Represents metric """
+    time = db.Column(db.DateTime, primary_key=True)
+    sensor = db.Column(db.Integer, db.ForeignKey('sensor.id'), index=True)
+    temperature = db.Column(db.Float)
+    light = db.Column(db.Float)
+    soilMoisture = db.Column(db.Float)
+
+    def to_dict(self):
+        return {'time': self.time, 'serial': self.serial, 'temperature': self.temperature,
+                'light': self.light, 'soilMoisture': self.soilMoisture}
