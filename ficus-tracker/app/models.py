@@ -210,4 +210,4 @@ class RecommendationItem(db.Model):
     flower = db.Column(db.Integer, db.ForeignKey('flower.id'))
 
     def to_dict(self):
-        return {'id': self.id, 'class': self.r_class, 'flower': self.flower.to_dict()}
+        return {'id': self.id, 'class': self.r_class, 'flower': self.flower}
