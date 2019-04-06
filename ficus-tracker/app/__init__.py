@@ -4,6 +4,7 @@ from app.recommendations.engine import RecommendationBackGroundTask
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from app.utils import recommendation_classes
 
 # Main blueprint with index route
 main_bp = Blueprint('main', __name__)
@@ -22,7 +23,10 @@ def init_background_tasks():
             db.session.delete(task)
             db.session.commit()
         else:
-            recommendation_class = task.r_class
+            recommendation_class_name = task.r_class
+            recommendation_class = recommendation_classes().filter(
+                lambda x: x.__name__ == recommendation_class_name)
+
             RecommendationBackGroundTask(recommendation_class.create_from_db(flower))
 
 
