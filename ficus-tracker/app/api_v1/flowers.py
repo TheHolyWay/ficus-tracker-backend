@@ -49,8 +49,8 @@ def create_flower():
         return server_error(f"Exception occurred during loading user: {str(e)}")
 
     if user:
-        resp_data = dict()
         data = request.get_json() or {}
+        logging.info(data)
         if 'name' not in data or 'type' not in data:
             return bad_request("Request must includes name and type fields")
 
