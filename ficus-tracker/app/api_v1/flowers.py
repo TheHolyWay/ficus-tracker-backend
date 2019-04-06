@@ -1,12 +1,14 @@
+import datetime
+
 from flask import request
 
 from app import db
 from app.api_v1 import bp
-from app.models import FlowerType, User, Flower, Sensor
-from app.utils import create_response_from_data_with_code, parse_authorization_header, authorize
+from app.models import FlowerType, User, Flower, Sensor, RecommendationItem
+from app.utils import create_response_from_data_with_code, parse_authorization_header, authorize, \
+    recommendation_classes
 from app.api_v1.errors import server_error, bad_request, error_response, unauthorized
 import logging
-
 
 FLOWERS_API_PREFIX = '/flowers'
 
@@ -68,10 +70,20 @@ def create_flower():
         flower.flower_type = data.get('type')
         flower.user = user.id
         flower.sensor = sensor.id
+        flower.last_transplantation_year = data.get('last_transplantation_year') or \
+                                           datetime.datetime.now().year
 
         # Commit changes to db
         db.session.add(flower)
         db.session.commit()
+
+        for recommendation_class in recommendation_classes():
+            recom = RecommendationItem()
+            recom.r_class=recommendation_class.__name__
+            recom.flower = flower
+
+            db.session.add(recom)
+            db.session.commit()
 
         return create_response_from_data_with_code(flower.to_dict(), 201)
     else:

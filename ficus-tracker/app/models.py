@@ -147,6 +147,7 @@ class Flower(db.Model):
     flower_type = db.Column(db.Integer, db.ForeignKey('flower_type.id'))
     user = db.Column(db.Integer, db.ForeignKey('user.id'))
     sensor = db.Column(db.Integer, db.ForeignKey('sensor.id'))
+    last_transplantation_year = db.Column(db.Integer)
 
     def get_type_name_by_id(self):
         f_type = FlowerType.query.filter_by(id=self.flower_type).first()
@@ -163,7 +164,8 @@ class Flower(db.Model):
     def to_dict(self):
         return {'id': self.id, 'name': self.name,
                 'type': self.get_type_name_by_id(),
-                'sensor_data': self.get_last_sensor_data()}
+                'sensor_data': self.get_last_sensor_data(),
+                'last_transplantation_year': self.last_transplantation_year}
 
 
 class Sensor(db.Model):
