@@ -73,7 +73,7 @@ def get_available_sensors():
 
     if user and authorize(login, password, user):
         sensors = Sensor.query.filter_by(token=user.token).all()
-        return create_response_from_data_with_code([x.id for x in sensors], 200)
+        return create_response_from_data_with_code([x.serial_number for x in sensors], 200)
     else:
         return unauthorized(login)
 
