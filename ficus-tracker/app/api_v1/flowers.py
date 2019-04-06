@@ -25,7 +25,6 @@ def get_flower_types():
     return resp
 
 
-# ToDo: Add support for sensor
 @bp.route(FLOWERS_API_PREFIX, methods=['POST'])
 def create_flower():
     """ Create flower if it doesn't exists """

@@ -5,8 +5,8 @@ from flask import request
 from app import db
 from app.api_v1 import bp
 from app.models import User, Sensor, FlowerMetric
-from app.api_v1.errors import bad_request
-from app.utils import create_response_from_data_with_code
+from app.api_v1.errors import bad_request, unauthorized, server_error
+from app.utils import create_response_from_data_with_code, authorize, parse_authorization_header
 
 SENSORS_API_PREFIX = '/sensors'
 
@@ -49,4 +49,31 @@ def accept_data(token):
     db.session.add(metric)
     db.session.commit()
 
-    return create_response_from_data_with_code({}, 200)
+    return create_response_from_data_with_code({}, 204)
+
+
+@bp.route(SENSORS_API_PREFIX, methods=['GET'])
+def get_available_sensors():
+    headers = request.headers or {}
+
+    # Check request
+    if 'Authorization' not in headers:
+        return bad_request("Missing 'Authorization' header in request")
+
+    # Parse auth
+    try:
+        login, password = parse_authorization_header(headers.get('Authorization'))
+    except Exception as e:
+        return server_error(f"Exception occurred during parsing user credentials: {str(e)}")
+
+    try:
+        user = User.query.filter_by(login=login).first()
+    except Exception as e:
+        return server_error(f"Exception occurred during loading user: {str(e)}")
+
+    if user and authorize(login, password, user):
+        sensors = Sensor.query.filter_by(token=user.token).all()
+        return create_response_from_data_with_code([x.id for x in sensors], 200)
+    else:
+        return unauthorized(login)
+
