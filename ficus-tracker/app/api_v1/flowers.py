@@ -98,7 +98,7 @@ def get_user_flowers():
     if user and authorize(login, password, user):
         u_flowers = user.flowers.all()
         return create_response_from_data_with_code(
-            list(map(lambda x: {'id': x.id}, list(u_flowers))), 200)
+            list(map(lambda x: x.to_dict(), list(u_flowers))), 200)
     else:
         return unauthorized(login)
 
