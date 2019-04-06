@@ -52,7 +52,7 @@ def create_flower():
         data = request.get_json() or {}
         logging.info(data)
         if 'name' not in data or 'type' not in data:
-            return bad_request("Request must includes name and type fields")
+            return bad_request(f"Request must includes name and type fields. Request: {data}")
 
         flower = Flower()
         flower.name = data.get('name')
