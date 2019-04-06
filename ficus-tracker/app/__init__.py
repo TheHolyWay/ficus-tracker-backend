@@ -16,9 +16,6 @@ def index():
     return "Welcome on the ficus-tracker-backend"
 
 
-
-
-
 app = Flask(__name__)
 app.config.from_object(Config)
 app.app_context().push()

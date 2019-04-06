@@ -3,10 +3,13 @@ import logging
 
 logging.basicConfig(format='[%(name)s][%(asctime)s][%(message)s]', level=logging.INFO)
 
+tasks_pool = list()
+
 
 @app.shell_context_processor
 def make_shell_context():
     return {'db': db}
+
 
 def init_background_tasks():
     from app.utils import recommendation_classes
@@ -24,7 +27,9 @@ def init_background_tasks():
             recommendation_class = list(filter(lambda x: x.__name__ == recommendation_class_name,
                                                recommendation_classes()))[0]
 
-            RecommendationBackGroundTask(recommendation_class.create_from_db(task.id, flower))
+            if not any([x.t_id == task.id for x in tasks_pool]):
+                tasks_pool.append(RecommendationBackGroundTask(
+                    recommendation_class.create_from_db(task.id, flower)))
 
 
 if __name__ == '__main__':
