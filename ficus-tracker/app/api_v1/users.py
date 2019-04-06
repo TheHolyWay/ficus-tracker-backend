@@ -9,7 +9,7 @@ from app.utils import create_response_from_data_with_code, authorize, parse_auth
 USER_API_PREFIX = '/users'
 
 
-@bp.route(f'{USER_API_PREFIX}/authorize', methods=['POST'])
+@bp.route('/users/authorize', methods=['POST'])
 def create_user_or_return_token():
     print('hey')
     """ Create user and return it's token if user doesn't exists otherwise return user token """
