@@ -72,6 +72,7 @@ class TransplantationRecommendation(DateBasedRecommendation):
 
 class LightMaxProblem(Recommendation):
     def __init__(self, t_id):
+        self.t_id = t_id
         from app.models import RecommendationItem, FlowerType, Sensor, Flower, IlluminationType
         task = RecommendationItem.query.filter_by(id=self.t_id).first()
         flower = Flower.query.filter_by(id=task.flower).first()
