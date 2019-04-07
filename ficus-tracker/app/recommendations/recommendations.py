@@ -120,7 +120,7 @@ class SoilMoistureMaxProblem(Recommendation):
         sm = SoilMoistureType.query.filter_by(id=flower_type.soil_moisture).first()
         self.limit = sm.max_value
 
-        super().__init__(t_id, f"Слишком высокая влажность воздуха для растения '{flower.name}'", severity=0)
+        super().__init__(t_id, f"Слишком высокая влажность почвы для растения '{flower.name}'", severity=0)
 
         logging.info(f"Initialized SoilMoistureMaxProblem for task {self.t_id} and "
                      f"sensor {self.sensor_id}")
