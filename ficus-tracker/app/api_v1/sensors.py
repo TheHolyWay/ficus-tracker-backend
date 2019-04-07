@@ -47,7 +47,7 @@ def accept_data(token):
     metric.time = datetime.datetime.now()
     metric.sensor = sensor.id
     metric.temperature =float(data.get('temperature', -1.0))
-    metric.light = (1000.0 - float(data.get('temperature', -1.0))) / 10
+    metric.light = (1000.0 - float(data.get('light', -1.0))) / 10
     metric.soilMoisture = float(data.get('soilMoisture', -1.0))
 
     # Commit changes to db

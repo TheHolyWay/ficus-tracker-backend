@@ -1,6 +1,1 @@
-class Ass:
-    pass
-
-a = Ass
-
-print(str(a.__name__))
+print((1000.0 - float(501)) / 10)
