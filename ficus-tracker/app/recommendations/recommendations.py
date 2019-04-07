@@ -108,6 +108,80 @@ class LightMaxProblem(Recommendation):
         return LightMaxProblem(kwargs.get('t_id'))
 
 
+class TemperatureMaxProblem(Recommendation):
+    def __init__(self, t_id):
+        self.t_id = t_id
+        from app.models import RecommendationItem, FlowerType, Flower
+        task = RecommendationItem.query.filter_by(id=self.t_id).first()
+        flower = Flower.query.filter_by(id=task.flower).first()
+        self.sensor_id = flower.sensor
+
+        flower_type = FlowerType.query.filter_by(id=flower.flower_type).first()
+        self.limit = flower_type.temperature_max
+
+        super().__init__(t_id, f"Слишком высокая температура для растения '{flower.name}'", severity=0)
+
+        logging.info(f"Initialized TemperatureMaxProblem for task {self.t_id} and "
+                     f"sensor {self.sensor_id}")
+
+    def check(self):
+        logging.info(f"Checking TemperatureMaxProblem for task: {self.t_id} and "
+                     f"sensor {self.sensor_id}")
+        from app.models import FlowerMetric
+        last_data = FlowerMetric.query.filter_by(
+            sensor=self.sensor_id).order_by(desc(FlowerMetric.time)).first()
+        # logging.info(f"Last data for task LightMaxProblem {self.t_id} and sensor {self.sensor_id} "
+        #              f"is {last_data.to_dict()}")
+
+        if last_data:
+            if float(last_data.temperature) > float(self.limit):
+                logging.info(f"TemperatureMaxProblem {self.t_id} triggered")
+                return True
+
+        return False
+
+    @staticmethod
+    def create_from_db(**kwargs):
+        return TemperatureMaxProblem(kwargs.get('t_id'))
+
+
+class TemperatureMinProblem(Recommendation):
+    def __init__(self, t_id):
+        self.t_id = t_id
+        from app.models import RecommendationItem, FlowerType, Flower
+        task = RecommendationItem.query.filter_by(id=self.t_id).first()
+        flower = Flower.query.filter_by(id=task.flower).first()
+        self.sensor_id = flower.sensor
+
+        flower_type = FlowerType.query.filter_by(id=flower.flower_type).first()
+        self.limit = flower_type.temperature_min
+
+        super().__init__(t_id, f"Слишком низкая температура для растения '{flower.name}'", severity=0)
+
+        logging.info(f"Initialized TemperatureMinProblem for task {self.t_id} and "
+                     f"sensor {self.sensor_id}")
+
+    def check(self):
+        logging.info(f"Checking TemperatureMinProblem for task: {self.t_id} and "
+                     f"sensor {self.sensor_id}")
+        from app.models import FlowerMetric
+        last_data = FlowerMetric.query.filter_by(
+            sensor=self.sensor_id).order_by(desc(FlowerMetric.time)).first()
+        # logging.info(f"Last data for task LightMaxProblem {self.t_id} and sensor {self.sensor_id} "
+        #              f"is {last_data.to_dict()}")
+
+        if last_data:
+            if float(last_data.temperature) < float(self.limit):
+                logging.info(f"TemperatureMinProblem {self.t_id} triggered")
+                return True
+
+        return False
+
+    @staticmethod
+    def create_from_db(**kwargs):
+        return TemperatureMinProblem(kwargs.get('t_id'))
+
+
 class SoilMoistureMaxProblem(Recommendation):
     def __init__(self, t_id):
         self.t_id = t_id

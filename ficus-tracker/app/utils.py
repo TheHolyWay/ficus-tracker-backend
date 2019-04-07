@@ -37,4 +37,6 @@ def recommendation_classes():
             recommendations.LightMaxProblem,
             recommendations.SoilMoistureMaxProblem,
             recommendations.LightMinProblem,
-            recommendations.SoilMoistureMinProblem]
+            recommendations.SoilMoistureMinProblem,
+            recommendations.TemperatureMaxProblem,
+            recommendations.TemperatureMinProblem]
