@@ -1,6 +1,7 @@
 import logging
 import time
 import threading
+from app.recommendations.recommendations import DateBasedRecommendation
 
 
 class RecommendationBackGroundTask:
@@ -16,9 +17,10 @@ class RecommendationBackGroundTask:
         from app.models import RecommendationAlarm
         from app import db
         while True:
+            alarm = RecommendationAlarm.query.filter_by(task=self.recom.t_id).first()
+
             if self.recom.check():
                 logging.info("Creating alarm!")
-                alarm = RecommendationAlarm.query.filter_by(task=self.recom.t_id).first()
                 if not alarm:
                     alarm = RecommendationAlarm()
                     alarm.task = self.recom.t_id
@@ -27,5 +29,10 @@ class RecommendationBackGroundTask:
 
                     db.session.add(alarm)
                     db.session.commit()
+            else:
+                if not isinstance(self.recom, DateBasedRecommendation):
+                    if alarm:
+                        db.session.delete(alarm)
+                        db.session.commit()
 
             time.sleep(self.interval)

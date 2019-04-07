@@ -2,7 +2,7 @@ import base64
 
 from flask import jsonify
 from app.models import User
-from app.recommendations.recommendations import TransplantationRecommendation
+from app.recommendations import recommendations
 
 
 def create_response_from_data_with_code(data, code: int=200):
@@ -33,4 +33,5 @@ def parse_authorization_header(auth_header):
 
 
 def recommendation_classes():
-    return [TransplantationRecommendation]
+    return [recommendations.TransplantationRecommendation,
+            recommendations.LightMaxProblem]

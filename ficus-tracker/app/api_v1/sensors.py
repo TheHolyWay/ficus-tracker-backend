@@ -46,7 +46,7 @@ def accept_data(token):
     metric = FlowerMetric()
     metric.time = datetime.datetime.now()
     metric.sensor = sensor.id
-    metric.temperature = float(data.get('temperature', -1.0))
+    metric.temperature = (1000.0 - float(data.get('temperature', -1.0))) / 10
     metric.light = float(data.get('light', -1.0))
     metric.soilMoisture = float(data.get('soilMoisture', -1.0))
 

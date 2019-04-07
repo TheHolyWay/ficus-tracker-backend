@@ -1,9 +1,12 @@
 import datetime
-from abc import abstractmethod, ABC, ABCMeta
+from abc import abstractmethod, ABC
 
 import logging
 
-from app.models import FlowerType
+from sqlalchemy import desc
+
+from app.models import FlowerType, RecommendationItem, Flower, Sensor, FlowerMetric, \
+    IlluminationType
 
 
 class Recommendation(ABC):
@@ -51,7 +54,7 @@ class TransplantationRecommendation(DateBasedRecommendation):
     """ Recommendation for flower transplantation """
     def __init__(self, t_id, month, interval, last_transpl, flower_id, flower_name):
         last_date = datetime.datetime(year=last_transpl, month=month, day=15, hour=13)
-        mes = f"Пора пересадить цветок {flower_name}!"
+        mes = f"Пора пересадить растение '{flower_name}'!"
 
         super().__init__(t_id, last_date, interval, flower_id, mes)
 
@@ -67,9 +70,37 @@ class TransplantationRecommendation(DateBasedRecommendation):
                                              flower.name)
 
 
-class MetricBasedRecommendation(Recommendation, metaclass=ABCMeta):
-    def __init__(self, t_id, text):
-        super().__init__(t_id, text)
+class LightMaxProblem(Recommendation):
+    def __init__(self, t_id):
+        task = RecommendationItem.query.filter_by(id=self.t_id).first()
+        flower = Flower.query.filter_by(id=task.flower).first()
+        sensor = Sensor.query.filter_by(flower=flower.id).first()
+        self.sensor_id = sensor.id
+
+        flower_type = FlowerType.query.filter_by(id=flower.flower_type).first()
+        ilum = IlluminationType.query.filter_by(id=flower_type.illumination).first()
+        self.limit = ilum.max_value
+
+        super().__init__(t_id, f"Слишком много света для растения '{flower.id}'", severity=0)
+
+        logging.info(f"Initialized LightMaxProblem for task {self.t_id} and "
+                     f"sensor {self.sensor_id}")
 
     def check(self):
-        pass
+        logging.info(f"Checking LightMaxProblem for task: {self.t_id} and "
+                     f"sensor {self.sensor_id}")
+        last_data = FlowerMetric.query.filter_by(
+            sensor=self.sensor_id).order_by(desc(FlowerMetric.time)).first()
+        logging.info(f"Last data for task LightMaxProblem {self.t_id} and sensor {self.sensor_id} "
+                     f"is {last_data.to_dict()}")
+
+        if last_data:
+            if float(last_data.light) > float(self.limit) * 1.05:
+                logging.info(f"LightMaxProblem {self.t_id} triggered")
+                return True
+
+        return False
+
+    @staticmethod
+    def create_from_db(t_id):
+        return LightMaxProblem(t_id)
