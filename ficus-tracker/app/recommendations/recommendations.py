@@ -76,8 +76,7 @@ class LightMaxProblem(Recommendation):
         from app.models import RecommendationItem, FlowerType, Sensor, Flower, IlluminationType
         task = RecommendationItem.query.filter_by(id=self.t_id).first()
         flower = Flower.query.filter_by(id=task.flower).first()
-        sensor = Sensor.query.filter_by(flower=flower.id).first()
-        self.sensor_id = sensor.id
+        self.sensor_id = flower.sensor
 
         flower_type = FlowerType.query.filter_by(id=flower.flower_type).first()
         ilum = IlluminationType.query.filter_by(id=flower_type.illumination).first()
