@@ -82,7 +82,7 @@ class LightMaxProblem(Recommendation):
         ilum = IlluminationType.query.filter_by(id=flower_type.illumination).first()
         self.limit = ilum.max_value
 
-        super().__init__(t_id, f"Слишком много света для растения '{flower.id}'", severity=0)
+        super().__init__(t_id, f"Слишком много света для растения '{flower.name}'", severity=0)
 
         logging.info(f"Initialized LightMaxProblem for task {self.t_id} and "
                      f"sensor {self.sensor_id}")

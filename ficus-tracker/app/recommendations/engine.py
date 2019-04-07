@@ -5,7 +5,7 @@ from app.recommendations.recommendations import DateBasedRecommendation
 
 
 class RecommendationBackGroundTask:
-    def __init__(self, recom, interval=60):
+    def __init__(self, recom, interval=15):
         self.interval = interval
         self.recom = recom
 
