@@ -276,8 +276,8 @@ class SoilMoistureMinProblem(Recommendation):
                      f"sensor {self.sensor_id}")
 
     def check(self):
-        logging.info(f"Checking SoilMoistureMinProblem for task: {self.t_id} and "
-                     f"sensor {self.sensor_id}")
+        # logging.info(f"Checking SoilMoistureMinProblem for task: {self.t_id} and "
+        #              f"sensor {self.sensor_id}")
         from app.models import FlowerMetric
         last_data = FlowerMetric.query.filter_by(
             sensor=self.sensor_id).order_by(desc(FlowerMetric.time)).first()
