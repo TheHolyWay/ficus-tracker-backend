@@ -20,7 +20,7 @@ class RecommendationBackGroundTask:
             alarm = RecommendationAlarm.query.filter_by(task=self.recom.t_id).first()
 
             if self.recom.check():
-                logging.info("Creating alarm!")
+                # logging.info("Creating alarm!")
                 if not alarm:
                     alarm = RecommendationAlarm()
                     alarm.task = self.recom.t_id

@@ -149,13 +149,6 @@ class Flower(db.Model):
     sensor = db.Column(db.Integer, db.ForeignKey('sensor.id'))
     last_transplantation_year = db.Column(db.Integer)
 
-    def get_type_name_by_id(self):
-        f_type = FlowerType.query.filter_by(id=self.flower_type).first()
-        if f_type:
-            return f_type.flower_type
-        else:
-            return 'None'
-
     def get_last_sensor_data(self):
         metric = FlowerMetric.query.filter_by(sensor=self.sensor).order_by(
             desc(FlowerMetric.time)).first()
@@ -164,11 +157,33 @@ class Flower(db.Model):
         else:
             return {}
 
+    def get_f_type_data(self, res=None):
+        if not res:
+            res = dict()
+
+        f_type: FlowerType = FlowerType.query.filter_by(id=self.flower_type).first()
+        res['type'] = f_type.flower_type
+        res['t_min'] = f_type.temperature_min
+        res['t_max'] = f_type.temperature_max
+
+        il: IlluminationType = IlluminationType.query.filter_by(id=f_type.illumination).first()
+
+        res['l_min'] = il.min_value
+        res['l_max'] = il.max_value
+
+        sm: SoilMoistureType = SoilMoistureType.query.filter_by(id=f_type.soil_moisture).first()
+
+        res['sm_min'] = sm.min_value
+        res['sm_max'] = sm.max_value
+
+        return res
+
     def to_dict(self):
-        return {'id': self.id, 'name': self.name,
-                'type': self.get_type_name_by_id(),
-                'sensor_data': self.get_last_sensor_data(),
-                'last_transplantation_year': self.last_transplantation_year}
+        res = {'id': self.id, 'name': self.name, 'sensor_data': self.get_last_sensor_data(),
+               'last_transplantation_year': self.last_transplantation_year}
+
+        res = self.get_f_type_data(res)
+        return res
 
 
 class Sensor(db.Model):

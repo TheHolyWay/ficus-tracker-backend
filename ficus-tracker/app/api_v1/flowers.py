@@ -17,7 +17,7 @@ FLOWERS_API_PREFIX = '/flowers'
 @bp.route(f'{FLOWERS_API_PREFIX}/types', methods=['GET'])
 def get_flower_types():
     """ Return list of possible flower types """
-    logging.info("Getting list of flowers ...")
+    # logging.info("Getting list of flowers ...")
     try:
         flowers = FlowerType.query.all() or {}
     except Exception as e:

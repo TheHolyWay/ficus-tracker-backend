@@ -35,8 +35,8 @@ class DateBasedRecommendation(Recommendation, ABC):
 
     def check(self):
         logging.info(f"Checking DateBasedRecommendation for task: {self.t_id}")
-        logging.info(f"Current date: {datetime.datetime.now()}")
-        logging.info(f"Next check date: {self.next_check_date}")
+        # logging.info(f"Current date: {datetime.datetime.now()}")
+        # logging.info(f"Next check date: {self.next_check_date}")
         if datetime.datetime.now() > self.next_check_date:
             self.last_check_date = datetime.datetime.now()
             self.next_check_date = datetime.datetime(
@@ -93,12 +93,12 @@ class LightMaxProblem(Recommendation):
         from app.models import FlowerMetric
         last_data = FlowerMetric.query.filter_by(
             sensor=self.sensor_id).order_by(desc(FlowerMetric.time)).first()
-        logging.info(f"Last data for task LightMaxProblem {self.t_id} and sensor {self.sensor_id} "
-                     f"is {last_data.to_dict()}")
+        # logging.info(f"Last data for task LightMaxProblem {self.t_id} and sensor {self.sensor_id} "
+        #              f"is {last_data.to_dict()}")
 
         if last_data:
             if float(last_data.light) > float(self.limit) * 1.05:
-                logging.info(f"LightMaxProblem {self.t_id} triggered")
+                # logging.info(f"LightMaxProblem {self.t_id} triggered")
                 return True
 
         return False
