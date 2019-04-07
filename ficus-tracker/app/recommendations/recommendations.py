@@ -97,7 +97,7 @@ class LightMaxProblem(Recommendation):
         #              f"is {last_data.to_dict()}")
 
         if last_data:
-            if float(last_data.light) > float(self.limit) * 1.05:
+            if float(last_data.light) > float(self.limit):
                 # logging.info(f"LightMaxProblem {self.t_id} triggered")
                 return True
 
