@@ -102,5 +102,5 @@ class LightMaxProblem(Recommendation):
         return False
 
     @staticmethod
-    def create_from_db(t_id):
-        return LightMaxProblem(t_id)
+    def create_from_db(**kwargs):
+        return LightMaxProblem(kwargs.get('t_id'))
