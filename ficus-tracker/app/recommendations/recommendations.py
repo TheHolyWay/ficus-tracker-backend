@@ -5,9 +5,6 @@ import logging
 
 from sqlalchemy import desc
 
-from app.models import FlowerType, RecommendationItem, Flower, Sensor, FlowerMetric, \
-    IlluminationType
-
 
 class Recommendation(ABC):
     def __init__(self, t_id, text, severity=2):
@@ -60,6 +57,7 @@ class TransplantationRecommendation(DateBasedRecommendation):
 
     @staticmethod
     def create_from_db(t_id, flower):
+        from app.models import FlowerType
         flower_type = FlowerType.query.filter_by(id=flower.flower_type).first()
         logging.info(f"Initialize task TransplantationRecommendation for task: {t_id}")
         return TransplantationRecommendation(t_id,
@@ -72,6 +70,7 @@ class TransplantationRecommendation(DateBasedRecommendation):
 
 class LightMaxProblem(Recommendation):
     def __init__(self, t_id):
+        from app.models import RecommendationItem, FlowerType, Sensor, Flower, IlluminationType
         task = RecommendationItem.query.filter_by(id=self.t_id).first()
         flower = Flower.query.filter_by(id=task.flower).first()
         sensor = Sensor.query.filter_by(flower=flower.id).first()
@@ -89,6 +88,7 @@ class LightMaxProblem(Recommendation):
     def check(self):
         logging.info(f"Checking LightMaxProblem for task: {self.t_id} and "
                      f"sensor {self.sensor_id}")
+        from app.models import FlowerMetric
         last_data = FlowerMetric.query.filter_by(
             sensor=self.sensor_id).order_by(desc(FlowerMetric.time)).first()
         logging.info(f"Last data for task LightMaxProblem {self.t_id} and sensor {self.sensor_id} "
