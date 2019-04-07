@@ -1,5 +1,5 @@
 import datetime
-from abc import abstractmethod, ABC
+from abc import abstractmethod, ABC, ABCMeta
 
 import logging
 
@@ -22,7 +22,7 @@ class Recommendation(ABC):
         pass
 
 
-class DateBasedRecommendation(Recommendation):
+class DateBasedRecommendation(Recommendation, ABC):
     def __init__(self, t_id, last_check_date, interval, flower_id, text, severity=2):
         super().__init__(t_id, text, severity)
 
@@ -67,5 +67,9 @@ class TransplantationRecommendation(DateBasedRecommendation):
                                              flower.name)
 
 
-class MetricBasedRecommendation:
-    pass
+class MetricBasedRecommendation(Recommendation, metaclass=ABCMeta):
+    def __init__(self, t_id, text):
+        super().__init__(t_id, text)
+
+    def check(self):
+        pass
