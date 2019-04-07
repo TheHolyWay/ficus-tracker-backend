@@ -160,7 +160,7 @@ def get_flower_by_id(id):
 
     if user and authorize(login, password, user):
         flower = user.flowers.filter_by(id=id).first()
-        resp_data = flower.to_dict()
+        resp_data = flower.to_dict() or {}
         resp_data['recommendations'] = _get_alarms_for_flower(user, id, 2)
         resp_data['warnings'] = _get_alarms_for_flower(user, id, 1)
         resp_data['problems'] = _get_alarms_for_flower(user, id, 0)

@@ -34,7 +34,7 @@ class DateBasedRecommendation(Recommendation, ABC):
             day=15, hour=13)
 
     def check(self):
-        logging.info(f"Checking DateBasedRecommendation for task: {self.t_id}")
+        # logging.info(f"Checking DateBasedRecommendation for task: {self.t_id}")
         # logging.info(f"Current date: {datetime.datetime.now()}")
         # logging.info(f"Next check date: {self.next_check_date}")
         if datetime.datetime.now() > self.next_check_date:
@@ -126,8 +126,8 @@ class SoilMoistureMaxProblem(Recommendation):
                      f"sensor {self.sensor_id}")
 
     def check(self):
-        logging.info(f"Checking SoilMoistureMaxProblem for task: {self.t_id} and "
-                     f"sensor {self.sensor_id}")
+        # logging.info(f"Checking SoilMoistureMaxProblem for task: {self.t_id} and "
+        #              f"sensor {self.sensor_id}")
         from app.models import FlowerMetric
         last_data = FlowerMetric.query.filter_by(
             sensor=self.sensor_id).order_by(desc(FlowerMetric.time)).first()
@@ -164,8 +164,8 @@ class LightMinProblem(Recommendation):
                      f"sensor {self.sensor_id}")
 
     def check(self):
-        logging.info(f"Checking LightMinProblem for task: {self.t_id} and "
-                     f"sensor {self.sensor_id}")
+        # logging.info(f"Checking LightMinProblem for task: {self.t_id} and "
+        #              f"sensor {self.sensor_id}")
         from app.models import FlowerMetric
         last_data = FlowerMetric.query.filter_by(
             sensor=self.sensor_id).order_by(desc(FlowerMetric.time)).first()
@@ -194,7 +194,7 @@ class SoilMoistureMinProblem(Recommendation):
 
         flower_type = FlowerType.query.filter_by(id=flower.flower_type).first()
         sm = SoilMoistureType.query.filter_by(id=flower_type.soil_moisture).first()
-        self.limit = sm.max_value
+        self.limit = sm.min_value
 
         super().__init__(t_id, f"Слишком низкая влажность почвы для растения '{flower.name}'", severity=0)
 
