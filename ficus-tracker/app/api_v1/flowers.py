@@ -125,9 +125,9 @@ def get_user_flowers():
 
         for fl in u_flowers:
             fl_data = fl.to_dict()
-            fl_data['recommendations'] = _get_alarms_for_flower(user, fl, 2)
-            fl_data['warnings'] = _get_alarms_for_flower(user, fl, 1)
-            fl_data['problems'] = _get_alarms_for_flower(user, fl, 0)
+            fl_data['recommendations'] = _get_alarms_for_flower(user, fl.id, 2)
+            fl_data['warnings'] = _get_alarms_for_flower(user, fl.id, 1)
+            fl_data['problems'] = _get_alarms_for_flower(user, fl.id, 0)
             data.append(fl_data)
 
         return create_response_from_data_with_code(data, 200)
