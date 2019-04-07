@@ -144,3 +144,79 @@ class SoilMoistureMaxProblem(Recommendation):
     @staticmethod
     def create_from_db(**kwargs):
         return SoilMoistureMaxProblem(kwargs.get('t_id'))
+
+
+class LightMinProblem(Recommendation):
+    def __init__(self, t_id):
+        self.t_id = t_id
+        from app.models import RecommendationItem, FlowerType, Flower, IlluminationType
+        task = RecommendationItem.query.filter_by(id=self.t_id).first()
+        flower = Flower.query.filter_by(id=task.flower).first()
+        self.sensor_id = flower.sensor
+
+        flower_type = FlowerType.query.filter_by(id=flower.flower_type).first()
+        ilum = IlluminationType.query.filter_by(id=flower_type.illumination).first()
+        self.limit = ilum.min_value
+
+        super().__init__(t_id, f"Слишком мало света для растения '{flower.name}'", severity=0)
+
+        logging.info(f"Initialized LightMinProblem for task {self.t_id} and "
+                     f"sensor {self.sensor_id}")
+
+    def check(self):
+        logging.info(f"Checking LightMinProblem for task: {self.t_id} and "
+                     f"sensor {self.sensor_id}")
+        from app.models import FlowerMetric
+        last_data = FlowerMetric.query.filter_by(
+            sensor=self.sensor_id).order_by(desc(FlowerMetric.time)).first()
+        # logging.info(f"Last data for task LightMaxProblem {self.t_id} and sensor {self.sensor_id} "
+        #              f"is {last_data.to_dict()}")
+
+        if last_data:
+            if float(last_data.light) < float(self.limit):
+                logging.info(f"LightMinProblem {self.t_id} triggered")
+                return True
+
+        return False
+
+    @staticmethod
+    def create_from_db(**kwargs):
+        return LightMinProblem(kwargs.get('t_id'))
+
+
+class SoilMoistureMinProblem(Recommendation):
+    def __init__(self, t_id):
+        self.t_id = t_id
+        from app.models import RecommendationItem, FlowerType, Flower, SoilMoistureType
+        task = RecommendationItem.query.filter_by(id=self.t_id).first()
+        flower = Flower.query.filter_by(id=task.flower).first()
+        self.sensor_id = flower.sensor
+
+        flower_type = FlowerType.query.filter_by(id=flower.flower_type).first()
+        sm = SoilMoistureType.query.filter_by(id=flower_type.soil_moisture).first()
+        self.limit = sm.max_value
+
+        super().__init__(t_id, f"Слишком низкая влажность почвы для растения '{flower.name}'", severity=0)
+
+        logging.info(f"Initialized SoilMoistureMinProblem for task {self.t_id} and "
+                     f"sensor {self.sensor_id}")
+
+    def check(self):
+        logging.info(f"Checking SoilMoistureMinProblem for task: {self.t_id} and "
+                     f"sensor {self.sensor_id}")
+        from app.models import FlowerMetric
+        last_data = FlowerMetric.query.filter_by(
+            sensor=self.sensor_id).order_by(desc(FlowerMetric.time)).first()
+        # logging.info(f"Last data for task LightMaxProblem {self.t_id} and sensor {self.sensor_id} "
+        #              f"is {last_data.to_dict()}")
+
+        if last_data:
+            if float(last_data.soilMoisture) < float(self.limit):
+                logging.info(f"SoilMoistureMinProblem {self.t_id} triggered")
+                return True
+
+        return False
+
+    @staticmethod
+    def create_from_db(**kwargs):
+        return SoilMoistureMinProblem(kwargs.get('t_id'))

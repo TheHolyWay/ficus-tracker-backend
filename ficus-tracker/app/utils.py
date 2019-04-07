@@ -35,4 +35,6 @@ def parse_authorization_header(auth_header):
 def recommendation_classes():
     return [recommendations.TransplantationRecommendation,
             recommendations.LightMaxProblem,
-            recommendations.SoilMoistureMaxProblem]
+            recommendations.SoilMoistureMaxProblem,
+            recommendations.LightMinProblem,
+            recommendations.SoilMoistureMinProblem]
