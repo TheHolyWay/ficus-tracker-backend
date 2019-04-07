@@ -31,7 +31,7 @@ def init_background_tasks():
 
             if not any([x.recom.t_id == task.id for x in tasks_pool]):
                 tasks_pool.append(RecommendationBackGroundTask(
-                    recommendation_class.create_from_db(task.id, flower)))
+                    recommendation_class.create_from_db(t_id=task.id, flower=flower)))
 
 
 if __name__ == '__main__':

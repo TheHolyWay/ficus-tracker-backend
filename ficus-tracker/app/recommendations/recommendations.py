@@ -56,8 +56,10 @@ class TransplantationRecommendation(DateBasedRecommendation):
         super().__init__(t_id, last_date, interval, flower_id, mes)
 
     @staticmethod
-    def create_from_db(t_id, flower):
+    def create_from_db(**kwargs):
         from app.models import FlowerType
+        t_id = kwargs.get('t_id')
+        flower = kwargs.get('flower')
         flower_type = FlowerType.query.filter_by(id=flower.flower_type).first()
         logging.info(f"Initialize task TransplantationRecommendation for task: {t_id}")
         return TransplantationRecommendation(t_id,

@@ -86,7 +86,8 @@ def create_flower():
             db.session.add(recom)
             db.session.commit()
 
-            RecommendationBackGroundTask(recommendation_class.create_from_db(recom.id, flower))
+            RecommendationBackGroundTask(recommendation_class.create_from_db(t_id=recom.id,
+                                                                             flower=flower))
 
         resp_data = flower.to_dict()
         resp_data['recommendations'] = _get_alarms_for_flower(user, id, 2)
